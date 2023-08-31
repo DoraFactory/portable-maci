@@ -1,0 +1,45 @@
+:root
+  --max-width: 1180px
+  --border-radius: 12px
+  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono', 'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro', 'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace
+
+  --page-padding: 48px 64px
+
+  // FIGMA
+  --basic-ink-primary: #21212C
+  --basic-ink-secondary: #7B7B9D
+  --basic-bg-primary: #FFFFFF
+  --basic-bg-secondary: #F6F6F8
+  --line-line-primary: #F0F0F4
+  --line-line-secondary: #E8E8EE
+  --accent-accent-primary: #FF6500
+  --accent-accent-secondary: #FFCC00
+  --accent-accent-bg: #FFF6F0
+  --error-error-primary: #CC0021
+  --error-error-bg: #FFF0F2
+  --safe-safe-primary: #00B28F
+  --safe-safe-bg: #E6FEFA
+
+// @media (prefers-color-scheme: dark)
+
+*
+  box-sizing: border-box
+  padding: 0
+  margin: 0
+
+html,
+body
+  max-width: 100vw
+  overflow-x: hidden
+  background: var(--basic-bg-secondary, #F6F6F8)
+
+body
+  color: var(--basic-ink-primary)
+
+a
+  color: inherit
+  text-decoration: none
+
+// @media (prefers-color-scheme: dark)
+//   html
+//     color-scheme: dark
