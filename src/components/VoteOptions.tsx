@@ -15,7 +15,7 @@ export default function DateItem(props: { options?: (string | undefined)[] }) {
   const options = props.options || _testVoteOptions
 
   return (
-    <div className={common.bento}>
+    <div className={[common.bento, styles.optionListWrapper].join(' ')}>
       <h3>Voting options</h3>
       <ul className={styles.optionList}>
         {options.map((content, i) => (
