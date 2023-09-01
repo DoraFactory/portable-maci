@@ -5,16 +5,38 @@ import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
 
 import styles from './Main.module.sass'
+import Tips from './Tips'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 
 import internalIcon from '@/assets/icons/internal.svg'
 
+const NeedToSignUp = (props: { voiceCredits: number }) => (
+  <div className={styles.needToSignUp}>
+    <p className={font['regular-body-rg']}>
+      After signing up, you will be assigned{' '}
+      <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>.{' '}
+      <a
+        href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
+        target="_blank"
+        className={[font.accentAccentPrimary, common.externalLink].join(' ')}
+        rel="noopener noreferrer"
+      >
+        Learn more about MACI.
+        <i />
+      </a>
+    </p>
+    <div className={common.button} c-active>
+      Sign Up
+    </div>
+  </div>
+)
+
 export default function Main() {
   const circutType = 'MACI-QV'
 
   return (
-    <div className={styles.main}>
+    <div className={[styles.main, font['regular-body-rg']].join(' ')}>
       <div className={styles.titleWrapper}>
         <div className={styles.title}>
           <h1 className={font['extrabold-headline-eb']}>#15 A Quadratic Voting Round</h1>
@@ -45,6 +67,7 @@ export default function Main() {
               rel="noopener noreferrer"
             >
               https://example.com/round/15
+              <i />
             </a>
           </p>
         </div>
@@ -70,6 +93,21 @@ export default function Main() {
           <div className={common.bento}>
             <h3>Connect wallet</h3>
             <Wallet />
+            <NeedToSignUp voiceCredits={100} />
+          </div>
+          <div className={[common.bento, styles.voteDetail].join(' ')}>
+            <h3>Voice credits: 0/100</h3>
+            <Tips />
+          </div>
+          <div className={[common.bento, styles.submitWrapper].join(' ')}>
+            <div>
+              <p className={font.basicInkSecondary}>
+                Please make sure you have sufficient DORA to pay the gas fee.
+              </p>
+              <div className={common.button} c-active>
+                Submit
+              </div>
+            </div>
           </div>
         </div>
       </div>

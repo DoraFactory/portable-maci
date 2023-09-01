@@ -35,8 +35,6 @@
       border-bottom: 1px solid var(--line-line-secondary)
   .wallet
     flex: 1 1 auto
-    display: flex
-    flex-direction: column
     background: var(--basic-bg-primary)
     > *:not(:last-child)
       border-bottom: 1px solid var(--line-line-secondary)
@@ -44,17 +42,12 @@
 .needToSignUp
   padding: 8px 0
   display: flex
-  justify-content: space-between
-  align-items: center
   gap: 24px
-
-.voteDetail
-  flex: 1 1 auto
-
-.submitWrapper
-  flex: 0 0 88px
-  > div
-    display: flex
-    justify-content: space-between
-    align-items: center
-    gap: 24px
+  align-items: center
+.signUpButton
+  flex: 0 0 auto
+  padding: 6px 18px
+  border-radius: 18px
+  background-color: var(--accent-accent-primary)
+  color: var(--basic-bg-primary)
+  cursor: pointer

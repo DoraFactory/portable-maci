@@ -1,12 +1,15 @@
 import { ChainInfo } from '@keplr-wallet/types'
 import { useState } from 'react'
 import Image from 'next/image'
+import { Fira_Code } from 'next/font/google'
 
 import styles from './Wallet.module.sass'
 import font from '@/styles/font.module.sass'
 
 import disconnectIcon from '@/assets/icons/disconnect.svg'
 import keplrLogo from '@/assets/logos/keplr.svg'
+
+const firaCode = Fira_Code({ subsets: ['latin'] })
 
 const _testChainParams = {
   chainId: 'doravota-devnet',
@@ -103,7 +106,7 @@ export default function Wallet() {
         <Image width={36} height={36} src={keplrLogo} alt="Keplr" priority />
         {address ? (
           <div className={styles.walletDetail}>
-            <div>
+            <div className={firaCode.className}>
               <p className={font['code-code-body-sb']}>{addressAbbr}</p>
               <p className={font['code-code-note-rg']}>{chainParams.chainName}</p>
             </div>
