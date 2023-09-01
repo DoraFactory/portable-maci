@@ -26,7 +26,7 @@ const NeedToSignUp = (props: { voiceCredits: number }) => (
         <i />
       </a>
     </p>
-    <div className={common.button} c-active>
+    <div className={common.button} c-active="true">
       Sign Up
     </div>
   </div>
@@ -90,7 +90,7 @@ export default function Main() {
           </div>
         </div>
         <div className={styles.wallet}>
-          <div className={common.bento}>
+          <div className={[common.bento, styles.walletWrapper].join(' ')}>
             <h3>Connect wallet</h3>
             <Wallet />
             <NeedToSignUp voiceCredits={100} />
@@ -104,7 +104,7 @@ export default function Main() {
               <p className={font.basicInkSecondary}>
                 Please make sure you have sufficient DORA to pay the gas fee.
               </p>
-              <div className={common.button} c-active>
+              <div className={common.button} c-active="true">
                 Submit
               </div>
             </div>
