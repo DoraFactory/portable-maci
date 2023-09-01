@@ -1,5 +1,4 @@
 import Head from 'next/head'
-// import Image from 'next/image'
 import { Public_Sans } from 'next/font/google'
 import styles from '@/styles/Home.module.sass'
 import Main from '@/components/Main'

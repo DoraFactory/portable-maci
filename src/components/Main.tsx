@@ -3,9 +3,14 @@ import font from '@/styles/font.module.sass'
 import common from '@/styles/common.module.sass'
 import Image from 'next/image'
 
-import iconInternal from '@/assets/icons/internal.svg'
+import internalIcon from '@/assets/icons/internal.svg'
+import DateItem from './DateItem'
+import VoteOptions from './VoteOptions'
+import Wallet from './Wallet'
 
 export default function Main() {
+  const circutType = 'MACI-QV'
+
   return (
     <div className={styles.main}>
       <div className={styles.titleWrapper}>
@@ -22,7 +27,7 @@ export default function Main() {
             rel="noopener noreferrer"
           >
             <span>View Details</span>
-            <Image width={16} height={16} src={iconInternal} alt="" priority />
+            <Image width={16} height={16} src={internalIcon} alt="" priority />
           </a>
         </div>
         <div className={styles.intro}>
@@ -44,8 +49,27 @@ export default function Main() {
       </div>
 
       <div className={[styles.body, common['elevation-elevation-1']].join(' ')}>
-        <div className={styles.info}>INFO & OPTIONS</div>
-        <div className={styles.wallet}>WALLET</div>
+        <div className={styles.info}>
+          <DateItem label="Round start" date={1693500000000} />
+          <DateItem label="Round end" date={1694500000000} />
+          <VoteOptions />
+          <div className={common.bento}>
+            <h3>Circuit</h3>
+            <p
+              className={[font.accentAccentPrimary, font['tabular-figures-body-rg--tnum']].join(
+                ' ',
+              )}
+            >
+              {circutType}
+            </p>
+          </div>
+        </div>
+        <div className={styles.wallet}>
+          <div className={common.bento}>
+            <h3>Connect wallet</h3>
+            <Wallet />
+          </div>
+        </div>
       </div>
     </div>
   )
