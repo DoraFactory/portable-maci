@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.31.1",
+    "@keplr-wallet/types": "^0.12.22",
     "@types/node": "20.5.7",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
@@ -22,6 +24,8 @@
   },
   "devDependencies": {
     "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "prettier": "^3.0.3"
   }
 }

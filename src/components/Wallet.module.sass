@@ -1,8 +1,29 @@
 .wallet
-  padding: 24px
+  padding: 16px 24px
+  height: 84px
   display: flex
   align-items: center
   gap: 24px
   border-radius: 8px
+  background-color: var(--basic-bg-primary)
   border: 1px solid var(--line-line-secondary)
   cursor: pointer
+  transition: all .3s
+  &[active]
+    cursor: default
+    background-color: var(--accent-accent-bg)
+    border-color: var(--accent-accent-primary)
+    color: var(--accent-accent-primary)
+
+.walletDetail
+  flex: 1 1 auto
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 24px
+  > img
+    cursor: pointer
+
+.notice
+  margin-top: 8px
+  color: var(--basic-ink-secondary)

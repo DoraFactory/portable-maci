@@ -1,12 +1,14 @@
-import styles from './Main.module.sass'
-import font from '@/styles/font.module.sass'
-import common from '@/styles/common.module.sass'
 import Image from 'next/image'
 
-import internalIcon from '@/assets/icons/internal.svg'
 import DateItem from './DateItem'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
+
+import styles from './Main.module.sass'
+import common from '@/styles/common.module.sass'
+import font from '@/styles/font.module.sass'
+
+import internalIcon from '@/assets/icons/internal.svg'
 
 export default function Main() {
   const circutType = 'MACI-QV'
