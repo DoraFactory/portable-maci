@@ -1,10 +1,13 @@
+import Image from 'next/image'
+
+import styles from './DateItem.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 
-export default function DateItem(props: { label: string; date: number }) {
-  const date = new Date(props.date)
+import arrowIcon from '@/assets/icons/arrow.svg'
 
-  const dateString = date
+const toTimeString = (date: Date) =>
+  date
     .toLocaleTimeString('zh', {
       year: 'numeric',
       month: '2-digit',
@@ -16,15 +19,25 @@ export default function DateItem(props: { label: string; date: number }) {
     })
     .split('/')
     .join('-')
-  const timezoneOffset = -Math.round(date.getTimezoneOffset() / 60)
+
+export default function DateItem(props: { from: number; to: number }) {
+  const from = new Date(props.from)
+  const to = new Date(props.to)
+
+  const fromString = toTimeString(from)
+  const toString = toTimeString(to)
+
+  const timezoneOffset = -Math.round(from.getTimezoneOffset() / 60)
   const timezone = timezoneOffset >= 0 ? '+' + timezoneOffset.toString() : timezoneOffset.toString()
 
   return (
     <div className={common.bento}>
-      <h3>
-        {props.label} (UTC{timezone})
-      </h3>
-      <p className={font['tabular-figures-body-rg--tnum']}>{dateString}</p>
+      <h3>Round duration (UTC{timezone})</h3>
+      <div className={[styles.dateWrapper, font['tabular-figures-body-rg--tnum']].join(' ')}>
+        <span>{fromString}</span>
+        <Image width={16} height={16} src={arrowIcon} alt="->" priority />
+        <span>{toString}</span>
+      </div>
     </div>
   )
 }
