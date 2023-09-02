@@ -8,30 +8,7 @@ import font from '@/styles/font.module.sass'
 import anonymousIcon from '@/assets/icons/anonymous.svg'
 import messageIcon from '@/assets/icons/message.svg'
 
-const toTimeString = (date: Date) =>
-  date
-    .toLocaleTimeString('zh', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hourCycle: 'h23',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    })
-    .split('/')
-    .join('-')
-
-export default function Participation(props: { from: number; to: number }) {
-  const from = new Date(props.from)
-  const to = new Date(props.to)
-
-  const fromString = toTimeString(from)
-  const toString = toTimeString(to)
-
-  const timezoneOffset = -Math.round(from.getTimezoneOffset() / 60)
-  const timezone = timezoneOffset >= 0 ? '+' + timezoneOffset.toString() : timezoneOffset.toString()
-
+export default function Participation() {
   const [state] = useState({ signups: 23, msgs: 56 })
 
   return (

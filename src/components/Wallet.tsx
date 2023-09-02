@@ -13,7 +13,7 @@ const firaCode = Fira_Code({ subsets: ['latin'] })
 
 const _testChainParams = {
   chainId: 'doravota-devnet',
-  chainName: 'dora',
+  chainName: 'DoraVota Devnet',
   rpc: 'https://vota-testnet-rpc.dorafactory.org',
   rest: 'https://vota-testnet-rest.dorafactory.org',
   bip44: {

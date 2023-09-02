@@ -1,10 +1,10 @@
 import Image from 'next/image'
 
-import DateItem from './DateItem'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
-import Tips from './Tips'
-import Participation from './Participation'
+import DateItem from './items/DateItem'
+import Participation from './items/Participation'
+import Tips from './items/Tips'
 
 import styles from './Main.module.sass'
 import common from '@/styles/common.module.sass'
@@ -77,7 +77,7 @@ export default function Main() {
       <div className={[styles.body, common['elevation-elevation-1']].join(' ')}>
         <div className={styles.info}>
           <DateItem from={1693500000000} to={1694500000000} />
-          <Participation from={1693500000000} to={1694500000000} />
+          <Participation />
           <VoteOptions />
           <div className={common.bento}>
             <h3>Circuit</h3>
