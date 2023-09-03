@@ -50,3 +50,17 @@
     background-color: var(--accent-accent-primary)
     color: var(--basic-bg-primary)
     cursor: pointer
+
+@mixin card
+  position: relative
+  &::after
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    border-radius: inherit
+    border: 1px solid var(--border-color, var(--line-line-secondary))
+    transition: border .2s
+    pointer-events: none

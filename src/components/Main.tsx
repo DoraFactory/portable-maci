@@ -1,7 +1,9 @@
 import Image from 'next/image'
 
+import { useEffect, useState } from 'react'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
+import ActiveOptionList from './ActiveOption/List'
 import DateItem from './items/DateItem'
 import Participation from './items/Participation'
 import Tips from './items/Tips'
@@ -11,6 +13,7 @@ import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 
 import internalIcon from '@/assets/icons/internal.svg'
+import { IOption } from '@/types'
 
 const NeedToSignUp = (props: { voiceCredits: number }) => (
   <div className={styles.needToSignUp}>
@@ -35,6 +38,14 @@ const NeedToSignUp = (props: { voiceCredits: number }) => (
 
 export default function Main() {
   const circutType = 'MACI-QV'
+
+  const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
+  const [usedVc, setUsedVc] = useState(0)
+
+  useEffect(() => {
+    const vc = selectedOptions.reduce((s, o) => s + o.vc, 0)
+    setUsedVc(vc)
+  }, [selectedOptions])
 
   return (
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
@@ -78,7 +89,7 @@ export default function Main() {
         <div className={styles.info}>
           <DateItem from={1693500000000} to={1694500000000} />
           <Participation />
-          <VoteOptions />
+          <VoteOptions avtiveOptions={selectedOptions} onSelect={setSelectedOptions} />
           <div className={common.bento}>
             <h3>Circuit</h3>
             <p
@@ -97,8 +108,9 @@ export default function Main() {
             <NeedToSignUp voiceCredits={100} />
           </div>
           <div className={[common.bento, styles.voteDetail].join(' ')}>
-            <h3>Voice credits: 0/100</h3>
-            <Tips />
+            <h3>Voice credits: {usedVc}/100</h3>
+            {selectedOptions.length ? '' : <Tips />}
+            <ActiveOptionList options={selectedOptions} onUpdate={setSelectedOptions} />
           </div>
           <div className={[common.bento, styles.submitWrapper].join(' ')}>
             <div>

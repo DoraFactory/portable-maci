@@ -1,0 +1,43 @@
+@use '@/styles/common.module.sass'
+
+.list
+  display: flex
+  flex-direction: column
+  gap: 8px
+
+.itemWrapper
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 16px
+  --border-color: var(--line-line-secondary)
+  &[c-focus]
+    --border-color: var(--accent-accent-primary)
+.item
+  flex: 1 1 auto
+  display: flex
+  border-radius: 4px
+  background: var(--basic-bg-primary)
+  @include common.card
+.info
+  flex: 1 1 auto
+  padding: 10px 14px
+  border-radius: 4px 0 0 4px
+  border-right: 1px solid var(--border-color, var(--line-line-secondary))
+  background: var(--basic-bg-secondary)
+  transition: border .2s
+.vc
+  flex: 0 0 132px
+  padding: 10px 14px
+  text-align: right
+  input
+    width: 100%
+    font: inherit
+    font-weight: 600
+    text-align: right
+    border: none
+    outline: none
+    &:invalid
+      color: var(--error-error-primary)
+.deleteButton
+  cursor: pointer

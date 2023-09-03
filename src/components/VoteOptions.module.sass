@@ -1,3 +1,5 @@
+@use '@/styles/common.module.sass'
+
 .optionListWrapper
   flex: 1 1 auto
 .optionList
@@ -8,5 +10,9 @@
   > li
     padding: 10px 14px
     border-radius: 4px
-    border: 1px solid var(--line-line-secondary)
-    background: var(--basic-bg-primary)
+    background-color: var(--basic-bg-primary)
+    transition: background-color .2s
+    @include common.card
+  .disabled
+    cursor: not-allowed
+    background-color: var(--basic-bg-secondary)
