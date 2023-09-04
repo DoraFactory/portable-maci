@@ -1,5 +1,7 @@
 // import { useEffect, useRef } from 'react'
 import { useEffect, useState } from 'react'
+import { message } from 'antd'
+
 import styles from './VoteOptions.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
@@ -15,6 +17,7 @@ const _testVoteOptions = [
 ]
 
 export default function DateItem(props: {
+  voteable: boolean
   options?: (string | undefined)[]
   avtiveOptions: IOption[]
   onSelect?: (o: IOption[]) => void
@@ -24,6 +27,10 @@ export default function DateItem(props: {
   const [disabledOptions, setDisabledOptions] = useState<boolean[]>([])
 
   const select = (idx: number) => {
+    if (!props.voteable) {
+      message.warning('Need to connect the wallet & signup first!')
+      return
+    }
     if (props.avtiveOptions.some((o) => o.idx === idx)) {
       return
     }
@@ -52,7 +59,7 @@ export default function DateItem(props: {
           <li
             key={i}
             onClick={() => select(i)}
-            className={disabledOptions[i] ? styles.disabled : undefined}
+            className={!props.voteable || disabledOptions[i] ? styles.disabled : undefined}
           >
             <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
               Option {i + 1}

@@ -3,66 +3,26 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Fira_Code } from 'next/font/google'
 
+import { GasPrice } from '@cosmjs/stargate'
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { message } from 'antd'
 import styles from './Wallet.module.sass'
 import font from '@/styles/font.module.sass'
 
 import disconnectIcon from '@/assets/icons/disconnect.svg'
 import keplrLogo from '@/assets/logos/keplr.svg'
+import getConfig from '@/lib/config'
 
 const firaCode = Fira_Code({ subsets: ['latin'] })
 
-const _testChainParams = {
-  chainId: 'doravota-devnet',
-  chainName: 'DoraVota Devnet',
-  rpc: 'https://vota-testnet-rpc.dorafactory.org',
-  rest: 'https://vota-testnet-rest.dorafactory.org',
-  bip44: {
-    coinType: 118,
-  },
-  bech32Config: {
-    bech32PrefixAccAddr: 'dora',
-    bech32PrefixAccPub: 'dorapub',
-    bech32PrefixValAddr: 'doravaloper',
-    bech32PrefixValPub: 'doravaloperpub',
-    bech32PrefixConsAddr: 'doravalcons',
-    bech32PrefixConsPub: 'doravalconspub',
-  },
-  currencies: [
-    {
-      coinDenom: 'DORA',
-      coinMinimalDenom: 'uDORA',
-      coinDecimals: 6,
-      coinGeckoId: 'dora',
-    },
-  ],
-  feeCurrencies: [
-    {
-      coinDenom: 'DORA',
-      coinMinimalDenom: 'uDORA',
-      coinDecimals: 6,
-      coinGeckoId: 'dora',
-      gasPriceStep: {
-        low: 0.001,
-        average: 0.0025,
-        high: 0.003,
-      },
-    },
-  ],
-  stakeCurrency: {
-    coinDenom: 'DORA',
-    coinMinimalDenom: 'uDORA',
-    coinDecimals: 6,
-    coinGeckoId: 'dora',
-  },
-  features: [
-    // "cosmwasm",
-    // "dora-txfees"
-  ],
-} as ChainInfo
+export default function Wallet({
+  updateClient,
+}: {
+  updateClient: (c: SigningCosmWasmClient | null) => void
+}) {
+  const chainParams = getConfig().chainInfo
 
-export default function Wallet() {
   const [address, setAddress] = useState<string>('')
-  const [chainParams] = useState<ChainInfo>(_testChainParams)
 
   const addressAbbr =
     address.slice(0, chainParams.bech32Config.bech32PrefixAccAddr.length + 5) +
@@ -76,7 +36,8 @@ export default function Wallet() {
 
     const keplr = window.keplr
     if (!keplr) {
-      throw new Error('NO_WALLET')
+      message.warning('Keplr wallet not detected!')
+      return
     }
 
     try {
@@ -88,12 +49,21 @@ export default function Wallet() {
       const offlineSigner = keplr.getOfflineSigner(chainId)
       const accounts = await offlineSigner.getAccounts()
       if (!accounts.length) {
-        throw new Error('NO_ACCOUNTS')
+        message.warning('No Accounts!')
+        return
       }
+
+      const gasPrice = GasPrice.fromString('0.025' + chainParams.currencies[0].coinMinimalDenom)
+      const client = await SigningCosmWasmClient.connectWithSigner(chainParams.rpc, offlineSigner, {
+        broadcastPollIntervalMs: 4_000,
+        broadcastTimeoutMs: 60_000,
+        gasPrice,
+      })
+      updateClient(client)
 
       setAddress(accounts[0].address)
     } catch {
-      throw new Error('UNKNOW_ERROR')
+      message.warning('Unknow Error!')
     }
   }
   const disconnect = () => {

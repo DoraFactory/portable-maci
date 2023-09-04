@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
 import { useEffect, useState } from 'react'
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
 import ActiveOptionList from './ActiveOption/List'
@@ -39,6 +40,9 @@ const NeedToSignUp = (props: { voiceCredits: number }) => (
 export default function Main() {
   const circutType = 'MACI-QV'
 
+  const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
+
+  const [voteable, setVoteable] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
   const [usedVc, setUsedVc] = useState(0)
 
@@ -46,6 +50,14 @@ export default function Main() {
     const vc = selectedOptions.reduce((s, o) => s + o.vc, 0)
     setUsedVc(vc)
   }, [selectedOptions])
+
+  // useEffect(() => {
+  //   if (client) {
+
+  //   } else {
+  //     setVoteable(false)
+  //   }
+  // }, [client])
 
   return (
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
@@ -89,7 +101,11 @@ export default function Main() {
         <div className={styles.info}>
           <DateItem from={1693500000000} to={1694500000000} />
           <Participation />
-          <VoteOptions avtiveOptions={selectedOptions} onSelect={setSelectedOptions} />
+          <VoteOptions
+            voteable={voteable}
+            avtiveOptions={selectedOptions}
+            onSelect={setSelectedOptions}
+          />
           <div className={common.bento}>
             <h3>Circuit</h3>
             <p
@@ -104,7 +120,7 @@ export default function Main() {
         <div className={styles.wallet}>
           <div className={[common.bento, styles.walletWrapper].join(' ')}>
             <h3>Connect wallet</h3>
-            <Wallet />
+            <Wallet updateClient={setClient} />
             <NeedToSignUp voiceCredits={100} />
           </div>
           <div className={[common.bento, styles.voteDetail].join(' ')}>
