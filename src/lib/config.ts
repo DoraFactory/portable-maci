@@ -53,6 +53,10 @@ const votaTestChainInfo = {
 
 export default function getConfig() {
   return {
+    api:
+      config.network === 'VOTA_TEST'
+        ? 'https://vota-testnet-api.dorafactory.org/'
+        : 'https://vota-api.dorafactory.org/',
     chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
     contractAddress: config.contract_address,
   }

@@ -13,6 +13,12 @@
   --border-color: var(--line-line-secondary)
   &[c-focus]
     --border-color: var(--accent-accent-primary)
+  &[c-error]
+    --border-color: var(--error-error-primary)
+    .vc
+      background-color: var(--error-error-bg)
+      p, input
+        color: var(--error-error-primary)
 .item
   flex: 1 1 auto
   display: flex
@@ -30,6 +36,7 @@
   flex: 0 0 132px
   padding: 10px 14px
   text-align: right
+  transition: background .2s
   input
     width: 100%
     font: inherit
@@ -37,6 +44,7 @@
     text-align: right
     border: none
     outline: none
+    background: none
     &:invalid
       color: var(--error-error-primary)
 .deleteButton

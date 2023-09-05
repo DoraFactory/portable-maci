@@ -55,6 +55,14 @@
 
 .voteDetail
   flex: 1 1 auto
+  &[c-error] .usedVc
+    color: var(--error-error-primary)
+.voteDetailTitle
+  display: flex
+  justify-content: space-between
+  gap: 16px
+  .alert
+    color: var(--error-error-primary)
 
 .submitWrapper
   flex: 0 0 88px

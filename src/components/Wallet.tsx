@@ -12,13 +12,16 @@ import font from '@/styles/font.module.sass'
 import disconnectIcon from '@/assets/icons/disconnect.svg'
 import keplrLogo from '@/assets/logos/keplr.svg'
 import getConfig from '@/lib/config'
+import { IAccountStatus } from '@/types'
 
 const firaCode = Fira_Code({ subsets: ['latin'] })
 
 export default function Wallet({
+  accountStatus,
   updateClient,
 }: {
-  updateClient: (c: SigningCosmWasmClient | null) => void
+  accountStatus: IAccountStatus
+  updateClient: (c: SigningCosmWasmClient | null, address: string) => void
 }) {
   const chainParams = getConfig().chainInfo
 
@@ -59,7 +62,8 @@ export default function Wallet({
         broadcastTimeoutMs: 60_000,
         gasPrice,
       })
-      updateClient(client)
+
+      updateClient(client, accounts[0].address)
 
       setAddress(accounts[0].address)
     } catch {
@@ -67,6 +71,8 @@ export default function Wallet({
     }
   }
   const disconnect = () => {
+    updateClient(null, '')
+
     setAddress('')
   }
 
@@ -94,9 +100,13 @@ export default function Wallet({
           </div>
         )}
       </div>
-      <p className={[styles.notice, font['regular-note-rg']].join(' ')}>
-        Only addresses on the allowlist can sign up and vote in this round.
-      </p>
+      {accountStatus.stateIdx < 0 && !accountStatus.whitelistCommitment ? (
+        <p className={[styles.notice, font['regular-note-rg']].join(' ')}>
+          Only addresses on the allowlist can sign up and vote in this round.
+        </p>
+      ) : (
+        ''
+      )}
     </div>
   )
 }

@@ -8,23 +8,31 @@ import deleteIcon from '@/assets/icons/delete.svg'
 
 export default function ActiveOptionItem({
   option,
+  error,
   onVcChange,
   onRemove,
 }: {
   option: IOption
+  error: boolean
   onVcChange: (vc: number) => void
   onRemove: () => void
 }) {
+  const [inputValue, setInputValue] = useState('')
   const [focus, setFocus] = useState(false)
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value
+    setInputValue(v)
     const n = /^[0-9]*$/.test(v) ? Number(v) : 0
     onVcChange(n)
   }
 
   return (
-    <li className={styles.itemWrapper} c-focus={focus ? '' : undefined}>
+    <li
+      className={styles.itemWrapper}
+      c-focus={focus ? '' : undefined}
+      c-error={inputValue && error ? '' : undefined}
+    >
       <div className={styles.item}>
         <div className={styles.info}>
           <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
@@ -39,8 +47,9 @@ export default function ActiveOptionItem({
           <input
             type="string"
             pattern="[0-9]*"
-            onChange={onChange}
             placeholder="0"
+            value={inputValue}
+            onChange={onChange}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
           />

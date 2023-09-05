@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
@@ -14,7 +14,8 @@ import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 
 import internalIcon from '@/assets/icons/internal.svg'
-import { IOption } from '@/types'
+import { IAccountStatus, IOption, IStats, emptyAccountStatus, emptyStats } from '@/types'
+import * as MACI from '@/lib/maci'
 
 const NeedToSignUp = (props: { voiceCredits: number }) => (
   <div className={styles.needToSignUp}>
@@ -42,22 +43,39 @@ export default function Main() {
 
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
 
+  const [stats, setStats] = useState<IStats>(emptyStats())
+  const [accountStatus, setAccountStatus] = useState<IAccountStatus>(emptyAccountStatus())
+
   const [voteable, setVoteable] = useState(false)
+  const [inputError, setInputError] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
   const [usedVc, setUsedVc] = useState(0)
+
+  useLayoutEffect(() => {
+    MACI.fetchStatus().then(setStats)
+  }, [])
 
   useEffect(() => {
     const vc = selectedOptions.reduce((s, o) => s + o.vc, 0)
     setUsedVc(vc)
   }, [selectedOptions])
 
-  // useEffect(() => {
-  //   if (client) {
+  useEffect(() => {
+    setInputError(usedVc > accountStatus.vcbTotal)
+  }, [usedVc, accountStatus.vcbTotal])
 
-  //   } else {
-  //     setVoteable(false)
-  //   }
-  // }, [client])
+  const updateClient = async (client: SigningCosmWasmClient | null, address: string) => {
+    setClient(client)
+
+    if (client) {
+      const status = await MACI.fetchAccountStatus(client, address)
+      setAccountStatus(status)
+      setVoteable(status.stateIdx >= 0)
+    } else {
+      setAccountStatus(emptyAccountStatus())
+      setVoteable(false)
+    }
+  }
 
   return (
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
@@ -100,7 +118,7 @@ export default function Main() {
       <div className={[styles.body, common['elevation-elevation-1']].join(' ')}>
         <div className={styles.info}>
           <DateItem from={1693500000000} to={1694500000000} />
-          <Participation />
+          <Participation stats={stats} />
           <VoteOptions
             voteable={voteable}
             avtiveOptions={selectedOptions}
@@ -120,20 +138,49 @@ export default function Main() {
         <div className={styles.wallet}>
           <div className={[common.bento, styles.walletWrapper].join(' ')}>
             <h3>Connect wallet</h3>
-            <Wallet updateClient={setClient} />
-            <NeedToSignUp voiceCredits={100} />
+            <Wallet updateClient={updateClient} accountStatus={accountStatus} />
+            {accountStatus.whitelistCommitment ? (
+              <NeedToSignUp voiceCredits={accountStatus.whitelistCommitment} />
+            ) : (
+              ''
+            )}
           </div>
-          <div className={[common.bento, styles.voteDetail].join(' ')}>
-            <h3>Voice credits: {usedVc}/100</h3>
-            {selectedOptions.length ? '' : <Tips />}
-            <ActiveOptionList options={selectedOptions} onUpdate={setSelectedOptions} />
+          <div
+            className={[common.bento, styles.voteDetail].join(' ')}
+            c-error={inputError ? '' : undefined}
+          >
+            {voteable ? (
+              <>
+                <div className={styles.voteDetailTitle}>
+                  <h3>
+                    Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
+                    {accountStatus.vcbTotal}
+                  </h3>
+                  {inputError ? (
+                    <p className={[styles.alert, font['semibold-caption-sb']].join(' ')}>
+                      Sum of voice credits exceeds limit
+                    </p>
+                  ) : (
+                    ''
+                  )}
+                </div>
+                {selectedOptions.length ? '' : <Tips />}
+                <ActiveOptionList
+                  options={selectedOptions}
+                  max={accountStatus.vcbTotal}
+                  onUpdate={setSelectedOptions}
+                />
+              </>
+            ) : (
+              ''
+            )}
           </div>
           <div className={[common.bento, styles.submitWrapper].join(' ')}>
             <div>
               <p className={font.basicInkSecondary}>
                 Please make sure you have sufficient DORA to pay the gas fee.
               </p>
-              <div className={common.button} c-active="true">
+              <div className={common.button} c-active={inputError ? undefined : ''}>
                 Submit
               </div>
             </div>
