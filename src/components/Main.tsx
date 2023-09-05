@@ -52,6 +52,7 @@ export default function Main() {
 
   const [voteable, setVoteable] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
+  const [submited, setSubmited] = useState(true)
 
   const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
   const inputError = usedVc > accountStatus.vcbTotal
@@ -59,7 +60,17 @@ export default function Main() {
   const submitable = usedVc && client && !inputError
 
   useLayoutEffect(() => {
+    const { contractAddress } = getConfig()
+
     MACI.fetchStatus().then(setStats)
+
+    const submitedStorage = localStorage.getItem('maci_submited_' + contractAddress)
+    if (submitedStorage) {
+      try {
+        setSelectedOptions(JSON.parse(submitedStorage))
+        setSubmited(true)
+      } catch {}
+    }
   }, [])
 
   const updateClient = async (client: SigningCosmWasmClient | null, address: string) => {
@@ -79,14 +90,16 @@ export default function Main() {
     if (!submitable) {
       return
     }
+    const { contractAddress } = getConfig()
+
+    const options = selectedOptions.filter((o) => !!o.vc)
+
     try {
       const maciAccount = await MACI.genKeypairFromSign(address)
 
-      const plan = selectedOptions
-        .filter((o) => !!o.vc)
-        .map((o) => {
-          return [o.idx, o.vc] as [number, number]
-        })
+      const plan = options.map((o) => {
+        return [o.idx, o.vc] as [number, number]
+      })
 
       const payload = batchGenMessage(
         accountStatus.stateIdx,
@@ -96,9 +109,40 @@ export default function Main() {
       )
 
       await MACI.submitPlan(client, address, payload)
+
+      localStorage.setItem('maci_submited_' + contractAddress, JSON.stringify(options))
+
+      setSubmited(true)
+      setSelectedOptions(options)
+
+      message.success('Voting successful!')
     } catch {
       message.warning('Submission canceled!')
     }
+  }
+
+  const revote = () => {
+    const { contractAddress } = getConfig()
+
+    localStorage.removeItem('maci_submited_' + contractAddress)
+
+    setSubmited(false)
+    setSelectedOptions([])
+  }
+
+  let VcNotice = '' as '' | JSX.Element
+  if (inputError) {
+    VcNotice = (
+      <p className={[styles.alert, font['semibold-caption-sb']].join(' ')}>
+        Sum of voice credits exceeds limit
+      </p>
+    )
+  } else if (submited) {
+    VcNotice = (
+      <p className={[styles.submited, font['semibold-caption-sb']].join(' ')}>
+        Your last valid submission
+      </p>
+    )
   }
 
   return (
@@ -144,7 +188,7 @@ export default function Main() {
           <DateItem from={1693500000000} to={1694500000000} />
           <Participation stats={stats} />
           <VoteOptions
-            voteable={voteable}
+            voteable={voteable && !submited}
             avtiveOptions={selectedOptions}
             onSelect={setSelectedOptions}
           />
@@ -185,18 +229,13 @@ export default function Main() {
                     Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
                     {accountStatus.vcbTotal}
                   </h3>
-                  {inputError ? (
-                    <p className={[styles.alert, font['semibold-caption-sb']].join(' ')}>
-                      Sum of voice credits exceeds limit
-                    </p>
-                  ) : (
-                    ''
-                  )}
+                  {VcNotice}
                 </div>
                 {selectedOptions.length ? '' : <Tips />}
                 <ActiveOptionList
                   options={selectedOptions}
                   max={accountStatus.vcbTotal}
+                  disabled={submited}
                   onUpdate={setSelectedOptions}
                 />
               </>
@@ -205,18 +244,27 @@ export default function Main() {
             )}
           </div>
           <div className={[common.bento, styles.submitWrapper].join(' ')}>
-            <div>
-              <p className={font.basicInkSecondary}>
-                Please make sure you have sufficient DORA to pay the gas fee.
-              </p>
-              <div
-                className={common.button}
-                c-active={submitable ? '' : undefined}
-                onClick={submit}
-              >
-                Submit
+            {submited ? (
+              <div>
+                <p className={font.basicInkSecondary}>🎉 Your vote has been submitted.</p>
+                <div className={common.button} c-active="" onClick={revote}>
+                  Start Revote
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <p className={font.basicInkSecondary}>
+                  Please make sure you have sufficient DORA to pay the gas fee.
+                </p>
+                <div
+                  className={common.button}
+                  c-active={submitable ? '' : undefined}
+                  onClick={submit}
+                >
+                  Submit
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

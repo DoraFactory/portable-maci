@@ -9,11 +9,13 @@ import deleteIcon from '@/assets/icons/delete.svg'
 export default function ActiveOptionItem({
   option,
   error,
+  disabled,
   onVcChange,
   onRemove,
 }: {
   option: IOption
   error: boolean
+  disabled: boolean
   onVcChange: (vc: number) => void
   onRemove: () => void
 }) {
@@ -32,6 +34,7 @@ export default function ActiveOptionItem({
       className={styles.itemWrapper}
       c-focus={focus ? '' : undefined}
       c-error={inputValue && error ? '' : undefined}
+      c-disabled={disabled ? '' : undefined}
     >
       <div className={styles.item}>
         <div className={styles.info}>
@@ -49,21 +52,26 @@ export default function ActiveOptionItem({
             pattern="[0-9]*"
             placeholder="0"
             value={inputValue}
+            disabled={disabled}
             onChange={onChange}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
           />
         </div>
       </div>
-      <Image
-        className={styles.deleteButton}
-        width={20}
-        height={20}
-        src={deleteIcon}
-        alt="x"
-        priority
-        onClick={onRemove}
-      />
+      {disabled ? (
+        ''
+      ) : (
+        <Image
+          className={styles.deleteButton}
+          width={20}
+          height={20}
+          src={deleteIcon}
+          alt="x"
+          priority
+          onClick={onRemove}
+        />
+      )}
     </li>
   )
 }

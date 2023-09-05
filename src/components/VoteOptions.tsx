@@ -1,6 +1,5 @@
-// import { useEffect, useRef } from 'react'
 import { useEffect, useState } from 'react'
-import { message } from 'antd'
+// import { message } from 'antd'
 
 import styles from './VoteOptions.module.sass'
 import common from '@/styles/common.module.sass'
@@ -28,7 +27,7 @@ export default function DateItem(props: {
 
   const select = (idx: number) => {
     if (!props.voteable) {
-      message.warning('Need to connect the wallet & signup first!')
+      // message.warning('Need to connect the wallet & signup first!')
       return
     }
     if (props.avtiveOptions.some((o) => o.idx === idx)) {

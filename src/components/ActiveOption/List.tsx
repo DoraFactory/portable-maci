@@ -6,10 +6,12 @@ import { IOption } from '@/types'
 export default function ActiveOptionList({
   options,
   max,
+  disabled,
   onUpdate,
 }: {
   options: IOption[]
   max: number
+  disabled: boolean
   onUpdate: (o: IOption[]) => void
 }) {
   const [error, setError] = useState(options.map(() => false))
@@ -53,6 +55,7 @@ export default function ActiveOptionList({
           key={i}
           option={o}
           error={error[i]}
+          disabled={disabled}
           onVcChange={(vc) => updateVc(o.idx, vc)}
           onRemove={() => removeVc(o.idx)}
         />

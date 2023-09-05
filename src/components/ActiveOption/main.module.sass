@@ -19,6 +19,12 @@
       background-color: var(--error-error-bg)
       p, input
         color: var(--error-error-primary)
+  &[c-disabled]
+    cursor: not-allowed
+    .vc
+      background-color: var(--basic-bg-secondary)
+      input:disabled
+        color: var(--basic-ink-primary)
 .item
   flex: 1 1 auto
   display: flex
