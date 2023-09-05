@@ -1,4 +1,12 @@
+# Portable MACI
+
+A portable MACI frontend for general MACI use cases on Dora Vota blockchain.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Config
+
+Edit `config.yaml` to configure MACI round information.
 
 ## Getting Started
 
