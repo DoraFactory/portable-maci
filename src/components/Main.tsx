@@ -2,6 +2,7 @@ import Image from 'next/image'
 
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { message } from 'antd'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
 import ActiveOptionList from './ActiveOption/List'
@@ -16,6 +17,8 @@ import font from '@/styles/font.module.sass'
 import internalIcon from '@/assets/icons/internal.svg'
 import { IAccountStatus, IOption, IStats, emptyAccountStatus, emptyStats } from '@/types'
 import * as MACI from '@/lib/maci'
+import { batchGenMessage } from '@/lib/circom'
+import getConfig from '@/lib/config'
 
 const NeedToSignUp = (props: { voiceCredits: number }) => (
   <div className={styles.needToSignUp}>
@@ -41,28 +44,23 @@ const NeedToSignUp = (props: { voiceCredits: number }) => (
 export default function Main() {
   const circutType = 'MACI-QV'
 
+  const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
 
   const [stats, setStats] = useState<IStats>(emptyStats())
   const [accountStatus, setAccountStatus] = useState<IAccountStatus>(emptyAccountStatus())
 
   const [voteable, setVoteable] = useState(false)
-  const [inputError, setInputError] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
-  const [usedVc, setUsedVc] = useState(0)
+
+  const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
+  const inputError = usedVc > accountStatus.vcbTotal
+
+  const submitable = usedVc && client && !inputError
 
   useLayoutEffect(() => {
     MACI.fetchStatus().then(setStats)
   }, [])
-
-  useEffect(() => {
-    const vc = selectedOptions.reduce((s, o) => s + o.vc, 0)
-    setUsedVc(vc)
-  }, [selectedOptions])
-
-  useEffect(() => {
-    setInputError(usedVc > accountStatus.vcbTotal)
-  }, [usedVc, accountStatus.vcbTotal])
 
   const updateClient = async (client: SigningCosmWasmClient | null, address: string) => {
     setClient(client)
@@ -74,6 +72,32 @@ export default function Main() {
     } else {
       setAccountStatus(emptyAccountStatus())
       setVoteable(false)
+    }
+  }
+
+  const submit = async () => {
+    if (!submitable) {
+      return
+    }
+    try {
+      const maciAccount = await MACI.genKeypairFromSign(address)
+
+      const plan = selectedOptions
+        .filter((o) => !!o.vc)
+        .map((o) => {
+          return [o.idx, o.vc] as [number, number]
+        })
+
+      const payload = batchGenMessage(
+        accountStatus.stateIdx,
+        maciAccount,
+        getConfig().coordPubkey,
+        plan,
+      )
+
+      await MACI.submitPlan(client, address, payload)
+    } catch {
+      message.warning('Submission canceled!')
     }
   }
 
@@ -138,7 +162,12 @@ export default function Main() {
         <div className={styles.wallet}>
           <div className={[common.bento, styles.walletWrapper].join(' ')}>
             <h3>Connect wallet</h3>
-            <Wallet updateClient={updateClient} accountStatus={accountStatus} />
+            <Wallet
+              updateClient={updateClient}
+              accountStatus={accountStatus}
+              address={address}
+              setAddress={setAddress}
+            />
             {accountStatus.whitelistCommitment ? (
               <NeedToSignUp voiceCredits={accountStatus.whitelistCommitment} />
             ) : (
@@ -180,7 +209,11 @@ export default function Main() {
               <p className={font.basicInkSecondary}>
                 Please make sure you have sufficient DORA to pay the gas fee.
               </p>
-              <div className={common.button} c-active={inputError ? undefined : ''}>
+              <div
+                className={common.button}
+                c-active={submitable ? '' : undefined}
+                onClick={submit}
+              >
                 Submit
               </div>
             </div>

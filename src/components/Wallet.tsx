@@ -19,13 +19,15 @@ const firaCode = Fira_Code({ subsets: ['latin'] })
 export default function Wallet({
   accountStatus,
   updateClient,
+  address,
+  setAddress,
 }: {
   accountStatus: IAccountStatus
   updateClient: (c: SigningCosmWasmClient | null, address: string) => void
+  address: string
+  setAddress: (a: string) => void
 }) {
   const chainParams = getConfig().chainInfo
-
-  const [address, setAddress] = useState<string>('')
 
   const addressAbbr =
     address.slice(0, chainParams.bech32Config.bech32PrefixAccAddr.length + 5) +

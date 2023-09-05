@@ -1,6 +1,20 @@
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { MsgExecuteContractEncodeObject, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
+import { GasPrice, calculateFee } from '@cosmjs/stargate'
+import { genKeypair, stringizing } from './circom'
 import getConfig from '@/lib/config'
 import { IAccountStatus, IStats } from '@/types'
+
+type MixedData<T> = T | Array<MixedData<T>> | { [key: string]: MixedData<T> }
+
+type PrivateKey = bigint
+type PublicKey = [bigint, bigint]
+
+interface Account {
+  privKey: PrivateKey
+  pubKey: PublicKey
+  formatedPrivKey: PrivateKey
+}
 
 export async function fetchStatus(): Promise<IStats> {
   const { api, contractAddress } = getConfig()
@@ -88,4 +102,60 @@ export async function fetchAccountStatus(
       whitelistCommitment,
     }
   }
+}
+
+export async function genKeypairFromSign(address: string) {
+  if (!window.keplr) {
+    throw new Error('No wallet')
+  }
+  const { chainInfo } = getConfig()
+
+  const sig = await window.keplr.signArbitrary(
+    chainInfo.chainId,
+    address,
+    'Generate_MACI_Private_Key',
+  )
+
+  const sign = BigInt('0x' + Buffer.from(sig.signature, 'base64').toString('hex'))
+
+  return genKeypair(sign)
+}
+
+export async function submitPlan(
+  client: SigningCosmWasmClient,
+  address: string,
+  payload: {
+    msg: bigint[]
+    encPubkeys: PublicKey
+  }[],
+) {
+  const { contractAddress, chainInfo } = getConfig()
+
+  const msgs: MsgExecuteContractEncodeObject[] = payload.map(({ msg, encPubkeys }) => ({
+    typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+    value: MsgExecuteContract.fromPartial({
+      sender: address,
+      contract: contractAddress,
+      msg: new TextEncoder().encode(
+        JSON.stringify(
+          stringizing({
+            publish_message: {
+              enc_pub_key: {
+                x: encPubkeys[0],
+                y: encPubkeys[1],
+              },
+              message: {
+                data: msg,
+              },
+            },
+          }),
+        ),
+      ),
+    }),
+  }))
+
+  const gasPrice = GasPrice.fromString('0.025' + chainInfo.currencies[0].coinMinimalDenom)
+  const fee = calculateFee(20000000 * msgs.length, gasPrice)
+
+  return client.signAndBroadcast(address, msgs, fee)
 }

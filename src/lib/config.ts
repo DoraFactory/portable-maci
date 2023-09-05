@@ -59,5 +59,6 @@ export default function getConfig() {
         : 'https://vota-api.dorafactory.org/',
     chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
     contractAddress: config.contract_address,
+    coordPubkey: config.coord_pubkey.map((s) => BigInt(s)) as [bigint, bigint],
   }
 }
