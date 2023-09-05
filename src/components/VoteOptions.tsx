@@ -5,23 +5,14 @@ import styles from './VoteOptions.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 import { IOption } from '@/types'
-
-const _testVoteOptions = [
-  'The first option name',
-  'The second option name',
-  'The third option name',
-  'The fourth option name',
-  undefined,
-  undefined,
-]
+import getConfig from '@/lib/config'
 
 export default function DateItem(props: {
   voteable: boolean
-  options?: (string | undefined)[]
   avtiveOptions: IOption[]
   onSelect?: (o: IOption[]) => void
 }) {
-  const options = props.options || _testVoteOptions
+  const { options } = getConfig()
 
   const [disabledOptions, setDisabledOptions] = useState<boolean[]>([])
 
@@ -33,10 +24,9 @@ export default function DateItem(props: {
     if (props.avtiveOptions.some((o) => o.idx === idx)) {
       return
     }
-    const newActiveOptions: IOption[] = [
-      ...props.avtiveOptions,
-      { idx, label: options[idx], vc: 0 },
-    ].sort((a, b) => a.idx - b.idx)
+    const newActiveOptions: IOption[] = [...props.avtiveOptions, { idx, vc: 0 }].sort(
+      (a, b) => a.idx - b.idx,
+    )
     if (props.onSelect) {
       props.onSelect(newActiveOptions)
     }

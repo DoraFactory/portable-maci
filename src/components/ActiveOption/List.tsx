@@ -52,7 +52,7 @@ export default function ActiveOptionList({
     <ul className={styles.list}>
       {options.map((o, i) => (
         <ActiveOptionItem
-          key={i}
+          key={o.idx}
           option={o}
           error={error[i]}
           disabled={disabled}

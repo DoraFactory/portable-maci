@@ -1,6 +1,6 @@
 export interface IOption {
   idx: number
-  label?: string
+  // label?: string
   vc: number
 }
 

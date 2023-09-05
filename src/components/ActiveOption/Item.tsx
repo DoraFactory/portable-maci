@@ -1,10 +1,11 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 
 import styles from './main.module.sass'
 import font from '@/styles/font.module.sass'
 import { IOption } from '@/types'
 import deleteIcon from '@/assets/icons/delete.svg'
+import getConfig from '@/lib/config'
 
 export default function ActiveOptionItem({
   option,
@@ -19,6 +20,8 @@ export default function ActiveOptionItem({
   onVcChange: (vc: number) => void
   onRemove: () => void
 }) {
+  const { options } = getConfig()
+
   const [inputValue, setInputValue] = useState('')
   const [focus, setFocus] = useState(false)
 
@@ -28,6 +31,12 @@ export default function ActiveOptionItem({
     const n = /^[0-9]*$/.test(v) ? Number(v) : 0
     onVcChange(n)
   }
+
+  useEffect(() => {
+    if (option.vc) {
+      setInputValue(option.vc.toString())
+    }
+  }, [option])
 
   return (
     <li
@@ -41,7 +50,7 @@ export default function ActiveOptionItem({
           <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
             Option {option.idx + 1}
           </p>
-          <p className={font['semibold-body-sb']}>{option.label || '[Undefined]'}</p>
+          <p className={font['semibold-body-sb']}>{options[option.idx] || '[Undefined]'}</p>
         </div>
         <div className={styles.vc}>
           <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>

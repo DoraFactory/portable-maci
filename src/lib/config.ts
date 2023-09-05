@@ -53,6 +53,8 @@ const votaTestChainInfo = {
 
 export default function getConfig() {
   return {
+    round: { ...config.round_info },
+
     api:
       config.network === 'VOTA_TEST'
         ? 'https://vota-testnet-api.dorafactory.org/'
@@ -60,5 +62,10 @@ export default function getConfig() {
     chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
     contractAddress: config.contract_address,
     coordPubkey: config.coord_pubkey.map((s) => BigInt(s)) as [bigint, bigint],
+    circutType: config.circut_type,
+
+    startTime: config.start_time,
+    endTime: config.end_time,
+    options: config.options,
   }
 }

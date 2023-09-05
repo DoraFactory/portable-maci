@@ -1,8 +1,8 @@
-import Image from 'next/image'
-
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { message } from 'antd'
+
+import Title from './Title'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
 import ActiveOptionList from './ActiveOption/List'
@@ -14,7 +14,6 @@ import styles from './Main.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 
-import internalIcon from '@/assets/icons/internal.svg'
 import { IAccountStatus, IOption, IStats, emptyAccountStatus, emptyStats } from '@/types'
 import * as MACI from '@/lib/maci'
 import { batchGenMessage } from '@/lib/circom'
@@ -48,7 +47,7 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
 )
 
 export default function Main() {
-  const circutType = 'MACI-QV'
+  const { contractAddress, circutType, startTime, endTime } = getConfig()
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -58,7 +57,7 @@ export default function Main() {
 
   const [voteable, setVoteable] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
-  const [submited, setSubmited] = useState(true)
+  const [submited, setSubmited] = useState(false)
 
   const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
   const inputError = usedVc > accountStatus.vcbTotal
@@ -66,8 +65,6 @@ export default function Main() {
   const submitable = !!usedVc && !!client && !inputError
 
   useLayoutEffect(() => {
-    const { contractAddress } = getConfig()
-
     MACI.fetchStatus().then(setStats)
 
     const submitedStorage = localStorage.getItem('maci_submited_' + contractAddress)
@@ -77,7 +74,7 @@ export default function Main() {
         setSubmited(true)
       } catch {}
     }
-  }, [])
+  }, [contractAddress])
 
   const updateClient = async (client: SigningCosmWasmClient | null, address: string) => {
     setClient(client)
@@ -120,8 +117,6 @@ export default function Main() {
     if (!submitable) {
       return
     }
-    const { contractAddress } = getConfig()
-
     const options = selectedOptions.filter((o) => !!o.vc)
 
     try {
@@ -152,8 +147,6 @@ export default function Main() {
   }
 
   const revote = () => {
-    const { contractAddress } = getConfig()
-
     localStorage.removeItem('maci_submited_' + contractAddress)
 
     setSubmited(false)
@@ -177,45 +170,11 @@ export default function Main() {
 
   return (
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
-      <div className={styles.titleWrapper}>
-        <div className={styles.title}>
-          <h1 className={font['extrabold-headline-eb']}>#15 A Quadratic Voting Round</h1>
-          <a
-            href="#"
-            target="_blank"
-            className={[
-              styles.viewDetails,
-              font.accentAccentPrimary,
-              font['semibold-body-sb'],
-            ].join(' ')}
-            rel="noopener noreferrer"
-          >
-            <span>View Details</span>
-            <Image width={16} height={16} src={internalIcon} alt="" priority />
-          </a>
-        </div>
-        <div className={styles.intro}>
-          <p className={font['tabular-figures-body-rg--tnum']}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua.
-          </p>
-          <p className={font['tabular-figures-body-rg--tnum']}>
-            <a
-              href="#"
-              target="_blank"
-              className={[font.accentAccentPrimary, common.externalLink].join(' ')}
-              rel="noopener noreferrer"
-            >
-              https://example.com/round/15
-              <i />
-            </a>
-          </p>
-        </div>
-      </div>
+      <Title />
 
       <div className={[styles.body, common['elevation-elevation-1']].join(' ')}>
         <div className={styles.info}>
-          <DateItem from={1693500000000} to={1694500000000} />
+          <DateItem from={startTime} to={endTime} />
           <Participation stats={stats} />
           <VoteOptions
             voteable={voteable && !submited}
