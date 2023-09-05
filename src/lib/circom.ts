@@ -5,10 +5,10 @@ import createBlakeHash from 'blake-hash'
 
 type MixedData<T> = T | Array<MixedData<T>> | { [key: string]: MixedData<T> }
 
-type PrivateKey = bigint
-type PublicKey = [bigint, bigint]
+export type PrivateKey = bigint
+export type PublicKey = [bigint, bigint]
 
-interface Account {
+export interface Account {
   privKey: PrivateKey
   pubKey: PublicKey
   formatedPrivKey: PrivateKey

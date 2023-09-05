@@ -1,20 +1,9 @@
 import { MsgExecuteContractEncodeObject, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { GasPrice, calculateFee } from '@cosmjs/stargate'
-import { genKeypair, stringizing } from './circom'
+import { PublicKey, genKeypair, stringizing } from './circom'
 import getConfig from '@/lib/config'
 import { IAccountStatus, IStats } from '@/types'
-
-type MixedData<T> = T | Array<MixedData<T>> | { [key: string]: MixedData<T> }
-
-type PrivateKey = bigint
-type PublicKey = [bigint, bigint]
-
-interface Account {
-  privKey: PrivateKey
-  pubKey: PublicKey
-  formatedPrivKey: PrivateKey
-}
 
 export async function fetchStatus(): Promise<IStats> {
   const { api, contractAddress } = getConfig()
@@ -119,6 +108,24 @@ export async function genKeypairFromSign(address: string) {
   const sign = BigInt('0x' + Buffer.from(sig.signature, 'base64').toString('hex'))
 
   return genKeypair(sign)
+}
+
+export async function signup(client: SigningCosmWasmClient, address: string, pubKey: PublicKey) {
+  const { contractAddress } = getConfig()
+
+  return client.execute(
+    address,
+    contractAddress,
+    {
+      sign_up: {
+        pubkey: {
+          x: pubKey[0].toString(),
+          y: pubKey[1].toString(),
+        },
+      },
+    },
+    'auto',
+  )
 }
 
 export async function submitPlan(

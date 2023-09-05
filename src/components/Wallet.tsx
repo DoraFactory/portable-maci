@@ -1,5 +1,3 @@
-import { ChainInfo } from '@keplr-wallet/types'
-import { useState } from 'react'
 import Image from 'next/image'
 import { Fira_Code } from 'next/font/google'
 
@@ -103,7 +101,10 @@ export default function Wallet({
         )}
       </div>
       {accountStatus.stateIdx < 0 && !accountStatus.whitelistCommitment ? (
-        <p className={[styles.notice, font['regular-note-rg']].join(' ')}>
+        <p
+          className={[styles.notice, font['regular-note-rg']].join(' ')}
+          c-error={address ? '' : undefined}
+        >
           Only addresses on the allowlist can sign up and vote in this round.
         </p>
       ) : (

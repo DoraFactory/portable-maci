@@ -20,7 +20,13 @@ import * as MACI from '@/lib/maci'
 import { batchGenMessage } from '@/lib/circom'
 import getConfig from '@/lib/config'
 
-const NeedToSignUp = (props: { voiceCredits: number }) => (
+async function sleep(ts: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ts)
+  })
+}
+
+const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
   <div className={styles.needToSignUp}>
     <p className={font['regular-body-rg']}>
       After signing up, you will be assigned{' '}
@@ -35,7 +41,7 @@ const NeedToSignUp = (props: { voiceCredits: number }) => (
         <i />
       </a>
     </p>
-    <div className={common.button} c-active="true">
+    <div className={common.button} c-active="true" onClick={props.signup}>
       Sign Up
     </div>
   </div>
@@ -57,7 +63,7 @@ export default function Main() {
   const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
   const inputError = usedVc > accountStatus.vcbTotal
 
-  const submitable = usedVc && client && !inputError
+  const submitable = !!usedVc && !!client && !inputError
 
   useLayoutEffect(() => {
     const { contractAddress } = getConfig()
@@ -83,6 +89,30 @@ export default function Main() {
     } else {
       setAccountStatus(emptyAccountStatus())
       setVoteable(false)
+    }
+  }
+
+  const signup = async () => {
+    if (!client) {
+      return
+    }
+    try {
+      const maciAccount = await MACI.genKeypairFromSign(address)
+
+      await MACI.signup(client, address, maciAccount.pubKey)
+
+      message.success('Signup successful!')
+
+      while (true) {
+        const status = await MACI.fetchAccountStatus(client, address)
+        setAccountStatus(status)
+        if (status.stateIdx >= 0) {
+          break
+        }
+        await sleep(3000)
+      }
+    } catch {
+      message.warning('Signup canceled!')
     }
   }
 
@@ -213,7 +243,7 @@ export default function Main() {
               setAddress={setAddress}
             />
             {accountStatus.whitelistCommitment ? (
-              <NeedToSignUp voiceCredits={accountStatus.whitelistCommitment} />
+              <NeedToSignUp voiceCredits={accountStatus.whitelistCommitment} signup={signup} />
             ) : (
               ''
             )}
