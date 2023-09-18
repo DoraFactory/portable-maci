@@ -5,7 +5,7 @@ import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 
 import internalIcon from '@/assets/icons/internal.svg'
-import getConfig from '@/lib/config'
+import { getConfig } from '@/lib/config'
 
 export default function Title() {
   const { round } = getConfig()
@@ -16,7 +16,7 @@ export default function Title() {
     <div className={styles.titleWrapper}>
       <div className={styles.title}>
         <h1 className={font['extrabold-headline-eb']}>
-          #{round.index} {round.name}
+          #{round.index} {round.title}
         </h1>
         <a
           href={url}
@@ -31,15 +31,15 @@ export default function Title() {
         </a>
       </div>
       <div className={styles.intro}>
-        <p className={font['tabular-figures-body-rg--tnum']}>{round.intro}</p>
+        <p className={font['tabular-figures-body-rg--tnum']}>{round.desc}</p>
         <p className={font['tabular-figures-body-rg--tnum']}>
           <a
-            href={url}
+            href={round.link}
             target="_blank"
             className={[font.accentAccentPrimary, common.externalLink].join(' ')}
             rel="noopener noreferrer"
           >
-            {url}
+            {round.link}
             <i />
           </a>
         </p>

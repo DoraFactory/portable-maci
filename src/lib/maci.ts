@@ -2,8 +2,47 @@ import { MsgExecuteContractEncodeObject, SigningCosmWasmClient } from '@cosmjs/c
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { GasPrice, calculateFee } from '@cosmjs/stargate'
 import { PublicKey, genKeypair, stringizing } from './circom'
-import getConfig from '@/lib/config'
+import { getConfig, updateConfig } from '@/lib/config'
 import { IAccountStatus, IStats } from '@/types'
+
+export async function fetchContractInfo(contractAddress: string) {
+  const { api } = getConfig()
+
+  const result = await fetch(api, {
+    method: 'post',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      operationName: null,
+      query:
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY }}',
+      variables: { contractAddress },
+    }),
+  }).then((response) => response.json())
+
+  const r = result.data.round
+
+  updateConfig({
+    round: {
+      index: Number(r.roundId),
+      title: r.roundTitle,
+      desc: r.roundDescription,
+      link: r.roundLink,
+    },
+
+    contractAddress,
+    coordPubkey: [BigInt(r.coordinatorPubkeyX), BigInt(r.coordinatorPubkeyY)],
+    circutType: r.circuitName,
+
+    startTime: Number(r.votingStart) / 1e6,
+    endTime: Number(r.votingEnd) / 1e6,
+    // options: JSON.parse(r.voteOptionMap),
+  })
+}
 
 export async function fetchStatus(): Promise<IStats> {
   const { api, contractAddress } = getConfig()

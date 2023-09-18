@@ -1,25 +1,26 @@
-round_info:
-  index: 15
-  name: A Quadratic Voting Round
-  intro: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-
 # VOTA_TEST | VOTA
 network: VOTA_TEST
 
-contract_address: dora16yll06qup0j0mnjc7v68stmw939e73ykr3twtd78l3hqlkstm2yssys6az
-
-coord_pubkey:
-  - '7421895562686352826563669933550830041677218724210020561066263498415701325176'
-  - '15885728170420100812951141355295788125825926252169931895803773048587171524289'
-
-# MACI-QV | and more?
-circut_type: MACI-QV
-
 ### These parameters will be ignored in the new version of the MACI contract
 
-start_time: 1693500000000
+# round_info:
+#   index: 15
+#   name: A Quadratic Voting Round
+#   intro: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
-end_time: 1694500000000
+# contract_address: dora16yll06qup0j0mnjc7v68stmw939e73ykr3twtd78l3hqlkstm2yssys6az
+
+# coord_pubkey:
+#   - '7421895562686352826563669933550830041677218724210020561066263498415701325176'
+#   - '15885728170420100812951141355295788125825926252169931895803773048587171524289'
+# 1068a4deb5713adc861dc857b87dd27c90c950d645fb5427580f18afa3297578231f00e660f2ecfe88fc0cf83daa184e68a3a751408f5ded45597c1c2b85eec1
+
+# MACI-QV | and more?
+# circut_type: MACI-QV
+
+# start_time: 1693500000000
+
+# end_time: 1694500000000
 
 options:
   - The first option name

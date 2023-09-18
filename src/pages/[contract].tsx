@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import Head from 'next/head'
 import { Public_Sans } from 'next/font/google'
 
 import Main from '@/components/Main'
+import Prepare from '@/components/Prepare'
 
 import styles from '@/styles/Home.module.sass'
 
 const publicSans = Public_Sans({ subsets: ['latin'] })
 
 export default function Home() {
+  const [loaded, setLoaded] = useState(false)
+
   return (
     <>
       <Head>
@@ -17,7 +21,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.svg" />
       </Head>
       <main className={`${styles.container} ${publicSans.className}`}>
-        <Main />
+        {loaded ? <Main /> : <Prepare onLoaded={() => setLoaded(true)} />}
       </main>
     </>
   )

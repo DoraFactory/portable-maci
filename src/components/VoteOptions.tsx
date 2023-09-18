@@ -5,7 +5,7 @@ import styles from './VoteOptions.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 import { IOption } from '@/types'
-import getConfig from '@/lib/config'
+import { getConfig } from '@/lib/config'
 
 export default function DateItem(props: {
   voteable: boolean

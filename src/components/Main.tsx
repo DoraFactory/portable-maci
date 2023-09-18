@@ -17,7 +17,7 @@ import font from '@/styles/font.module.sass'
 import { IAccountStatus, IOption, IStats, emptyAccountStatus, emptyStats } from '@/types'
 import * as MACI from '@/lib/maci'
 import { batchGenMessage } from '@/lib/circom'
-import getConfig from '@/lib/config'
+import { getConfig } from '@/lib/config'
 
 async function sleep(ts: number) {
   return new Promise((resolve) => {

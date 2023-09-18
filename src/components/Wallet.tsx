@@ -9,7 +9,7 @@ import font from '@/styles/font.module.sass'
 
 import disconnectIcon from '@/assets/icons/disconnect.svg'
 import keplrLogo from '@/assets/logos/keplr.svg'
-import getConfig from '@/lib/config'
+import { getConfig } from '@/lib/config'
 import { IAccountStatus } from '@/types'
 
 const firaCode = Fira_Code({ subsets: ['latin'] })

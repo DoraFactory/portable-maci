@@ -5,7 +5,7 @@ import styles from './main.module.sass'
 import font from '@/styles/font.module.sass'
 import { IOption } from '@/types'
 import deleteIcon from '@/assets/icons/delete.svg'
-import getConfig from '@/lib/config'
+import { getConfig } from '@/lib/config'
 
 export default function ActiveOptionItem({
   option,

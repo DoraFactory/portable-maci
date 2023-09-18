@@ -51,21 +51,35 @@ const votaTestChainInfo = {
   ],
 } as ChainInfo
 
-export default function getConfig() {
-  return {
-    round: { ...config.round_info },
+let configInstance = {
+  round: {
+    index: 0,
+    title: '',
+    desc: '',
+    link: '',
+  },
 
-    api:
-      config.network === 'VOTA_TEST'
-        ? 'https://vota-testnet-api.dorafactory.org/'
-        : 'https://vota-api.dorafactory.org/',
-    chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
-    contractAddress: config.contract_address,
-    coordPubkey: config.coord_pubkey.map((s) => BigInt(s)) as [bigint, bigint],
-    circutType: config.circut_type,
+  api:
+    config.network === 'VOTA_TEST'
+      ? 'https://vota-testnet-api.dorafactory.org/'
+      : 'https://vota-api.dorafactory.org/',
+  chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
+  contractAddress: '',
+  coordPubkey: [] as bigint[],
+  circutType: '',
 
-    startTime: config.start_time,
-    endTime: config.end_time,
-    options: config.options,
+  startTime: 0,
+  endTime: 0,
+  options: config.options,
+}
+
+export function getConfig() {
+  return configInstance
+}
+
+export function updateConfig(config: Partial<typeof configInstance>) {
+  configInstance = {
+    ...configInstance,
+    ...config,
   }
 }
