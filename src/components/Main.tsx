@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { message } from 'antd'
 
@@ -64,7 +64,7 @@ export default function Main() {
 
   const submitable = !!usedVc && !!client && !inputError
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     MACI.fetchStatus().then(setStats)
 
     const submitedStorage = localStorage.getItem('maci_submited_' + contractAddress)
