@@ -65,7 +65,7 @@ let configInstance = {
       : 'https://vota-api.dorafactory.org/',
   chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
   contractAddress: '',
-  coordPubkey: [] as bigint[],
+  coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',
 
   startTime: 0,

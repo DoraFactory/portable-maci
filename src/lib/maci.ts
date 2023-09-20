@@ -19,7 +19,7 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
@@ -40,7 +40,7 @@ export async function fetchContractInfo(contractAddress: string) {
 
     startTime: Number(r.votingStart) / 1e6,
     endTime: Number(r.votingEnd) / 1e6,
-    // options: JSON.parse(r.voteOptionMap),
+    options: JSON.parse(r.voteOptionMap),
   })
 }
 

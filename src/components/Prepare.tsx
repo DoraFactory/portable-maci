@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Fira_Code } from 'next/font/google'
 
@@ -13,7 +13,7 @@ export default function Wallet({ onLoaded }: { onLoaded: () => void }) {
   const router = useRouter()
   const contract = router.query.contract as string
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (contract) {
       fetchContractInfo(contract).then(onLoaded)
     }
