@@ -104,6 +104,7 @@ export default function Main() {
         const status = await MACI.fetchAccountStatus(client, address)
         setAccountStatus(status)
         if (status.stateIdx >= 0) {
+          setVoteable(true)
           break
         }
         await sleep(3000)
