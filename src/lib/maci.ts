@@ -83,7 +83,8 @@ export async function fetchWhitelistCommitment(client: SigningCosmWasmClient, ad
         sender: address,
       },
     })
-    .then((n: string) => Number(n))
+    // .then((n: string) => Number(n))
+    .then(() => 100) // !! DEV !!
     .catch(() => 0)
 
   return whitelistCommitment
@@ -107,7 +108,7 @@ export async function fetchAccountStatus(
 
   stateIdx = (Number(stateIdx) - 1 || 0).toString()
 
-  if (stateIdx) {
+  if (stateIdx !== '-1') {
     balance = await client
       .queryContractSmart(contractAddress, {
         get_voice_credit_balance: {
