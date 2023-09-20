@@ -38,6 +38,8 @@ jobs:
         docker tag portable-maci:local $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
     - name: Redeploy on aws
+      env:
+        SUFFIX: ${{ fromJson('["-prod -n webapp", "-dev"]')[github.ref_name == 'dev'] }}
       run: |
         aws eks update-kubeconfig --region  ap-southeast-1 --name ${{ secrets.EKS_CLUSTER }}
-        kubectl rollout restart deploy portable-maci
+        kubectl rollout restart deploy portable-maci$SUFFIX
