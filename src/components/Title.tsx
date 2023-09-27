@@ -8,9 +8,9 @@ import internalIcon from '@/assets/icons/internal.svg'
 import { getConfig } from '@/lib/config'
 
 export default function Title() {
-  const { round } = getConfig()
+  const { contractAddress, round, detailUrl } = getConfig()
 
-  const url = 'https://example.com/round/' + round.index
+  const url = detailUrl + contractAddress
 
   return (
     <div className={styles.titleWrapper}>
@@ -32,17 +32,19 @@ export default function Title() {
       </div>
       <div className={styles.intro}>
         <p className={font['tabular-figures-body-rg--tnum']}>{round.desc}</p>
-        <p className={font['tabular-figures-body-rg--tnum']}>
-          <a
-            href={round.link}
-            target="_blank"
-            className={[font.accentAccentPrimary, common.externalLink].join(' ')}
-            rel="noopener noreferrer"
-          >
-            {round.link}
-            <i />
-          </a>
-        </p>
+        {round.link && (
+          <p className={font['tabular-figures-body-rg--tnum']}>
+            <a
+              href={round.link}
+              target="_blank"
+              className={[font.accentAccentPrimary, common.externalLink].join(' ')}
+              rel="noopener noreferrer"
+            >
+              {round.link}
+              <i />
+            </a>
+          </p>
+        )}
       </div>
     </div>
   )

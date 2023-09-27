@@ -111,6 +111,10 @@ let configInstance = {
       ? 'https://vota-testnet-api.dorafactory.org/'
       : 'https://vota-api.dorafactory.org/',
   chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
+  detailUrl:
+    config.network === 'VOTA_TEST'
+      ? 'https://vota-testnet.dorafactory.org/round/'
+      : 'https://vota.dorafactory.org/round/',
   contractAddress: '',
   coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',
