@@ -2,6 +2,53 @@ import { ChainInfo } from '@keplr-wallet/types'
 
 import config from '@/../config.yaml'
 
+const votaChainInfo = {
+  chainId: 'vota-ash',
+  chainName: 'Dora Vota',
+  rpc: 'https://vota-rpc.dorafactory.org',
+  rest: 'https://vota-rest.dorafactory.org',
+  bip44: {
+    coinType: 118,
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: 'dora',
+    bech32PrefixAccPub: 'dorapub',
+    bech32PrefixValAddr: 'doravaloper',
+    bech32PrefixValPub: 'doravaloperpub',
+    bech32PrefixConsAddr: 'doravalcons',
+    bech32PrefixConsPub: 'doravalconspub',
+  },
+  currencies: [
+    {
+      coinDenom: 'DORA',
+      coinMinimalDenom: 'peaka',
+      coinDecimals: 18,
+      coinGeckoId: 'dora',
+    },
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: 'DORA',
+      coinMinimalDenom: 'peaka',
+      coinDecimals: 18,
+      coinGeckoId: 'dora',
+      gasPriceStep: {
+        low: 0.001,
+        average: 0.0025,
+        high: 0.003,
+      },
+    },
+  ],
+  stakeCurrency: {
+    coinDenom: 'DORA',
+    coinMinimalDenom: 'peaka',
+    coinDecimals: 18,
+    coinGeckoId: 'dora',
+  },
+  features: [
+    // 'cosmwasm', 'dora-txfees'
+  ],
+} as ChainInfo
 const votaTestChainInfo = {
   chainId: 'doravota-devnet',
   chainName: 'DoraVota Devnet',
@@ -63,7 +110,7 @@ let configInstance = {
     config.network === 'VOTA_TEST'
       ? 'https://vota-testnet-api.dorafactory.org/'
       : 'https://vota-api.dorafactory.org/',
-  chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaTestChainInfo,
+  chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
   contractAddress: '',
   coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',

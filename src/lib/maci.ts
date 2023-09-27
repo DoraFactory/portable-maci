@@ -83,8 +83,7 @@ export async function fetchWhitelistCommitment(client: SigningCosmWasmClient, ad
         sender: address,
       },
     })
-    // .then((n: string) => Number(n))
-    .then(() => 100) // !! DEV !!
+    .then((n: string) => Number(n))
     .catch(() => 0)
 
   return whitelistCommitment
