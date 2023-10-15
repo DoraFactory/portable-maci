@@ -24,7 +24,7 @@ export default function DateItem(props: {
     if (props.avtiveOptions.some((o) => o.idx === idx)) {
       return
     }
-    const newActiveOptions: IOption[] = [...props.avtiveOptions, { idx, vc: 0 }].sort(
+    const newActiveOptions: IOption[] = [...props.avtiveOptions, { idx, vc: 1 }].sort(
       (a, b) => a.idx - b.idx,
     )
     if (props.onSelect) {

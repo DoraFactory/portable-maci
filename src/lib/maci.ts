@@ -26,6 +26,10 @@ export async function fetchContractInfo(contractAddress: string) {
 
   const r = result.data.round
 
+  if (!r) {
+    throw new Error('no round')
+  }
+
   updateConfig({
     round: {
       index: Number(r.roundId),
