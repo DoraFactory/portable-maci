@@ -56,7 +56,9 @@ export default function Wallet({
         return
       }
 
-      const gasPrice = GasPrice.fromString('0.025' + chainParams.currencies[0].coinMinimalDenom)
+      const gasPrice = GasPrice.fromString(
+        '100000000000' + chainParams.currencies[0].coinMinimalDenom,
+      )
       const client = await SigningCosmWasmClient.connectWithSigner(chainParams.rpc, offlineSigner, {
         broadcastPollIntervalMs: 4_000,
         broadcastTimeoutMs: 60_000,

@@ -1,6 +1,6 @@
 import { MsgExecuteContractEncodeObject, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-import { GasPrice, calculateFee } from '@cosmjs/stargate'
+import { GasPrice, StdFee, calculateFee } from '@cosmjs/stargate'
 import { PublicKey, genKeypair, stringizing } from './circom'
 import { getConfig, updateConfig } from '@/lib/config'
 import { IAccountStatus, IStats } from '@/types'
@@ -19,12 +19,16 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
 
   const r = result.data.round
+
+  if (!r) {
+    throw new Error('no round')
+  }
 
   updateConfig({
     round: {
@@ -32,6 +36,7 @@ export async function fetchContractInfo(contractAddress: string) {
       title: r.roundTitle,
       desc: r.roundDescription,
       link: r.roundLink,
+      status: r.status,
     },
 
     contractAddress,
@@ -41,6 +46,13 @@ export async function fetchContractInfo(contractAddress: string) {
     startTime: Number(r.votingStart) / 1e6,
     endTime: Number(r.votingEnd) / 1e6,
     options: JSON.parse(r.voteOptionMap),
+
+    gasStation: {
+      enable: r.gasStationEnable,
+      totalGrant: r.totalGrant,
+      baseGrant: r.baseGrant,
+      totalBond: r.totalBond,
+    },
   })
 }
 
@@ -83,8 +95,7 @@ export async function fetchWhitelistCommitment(client: SigningCosmWasmClient, ad
         sender: address,
       },
     })
-    // .then((n: string) => Number(n))
-    .then(() => 100) // !! DEV !!
+    .then((n: string) => Number(n))
     .catch(() => 0)
 
   return whitelistCommitment
@@ -151,7 +162,62 @@ export async function genKeypairFromSign(address: string) {
 }
 
 export async function signup(client: SigningCosmWasmClient, address: string, pubKey: PublicKey) {
-  const { contractAddress } = getConfig()
+  const { contractAddress, gasStation, chainInfo } = getConfig()
+
+  // const msg: MsgExecuteContractEncodeObject = {
+  //   typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+  //   value: MsgExecuteContract.fromPartial({
+  //     sender: address,
+  //     contract: contractAddress,
+  //     msg: new TextEncoder().encode(
+  //       JSON.stringify({
+  //         sign_up: {
+  //           pubkey: {
+  //             x: pubKey[0].toString(),
+  //             y: pubKey[1].toString(),
+  //           },
+  //         },
+  //       }),
+  //     ),
+  //   }),
+  // }
+
+  // const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
+  // let fee = calculateFee(20000000, gasPrice)
+
+  // if (gasStation.enable === true) {
+  //   const grantFee: StdFee = {
+  //     amount: fee.amount,
+  //     gas: fee.gas,
+  //     granter: contractAddress,
+  //   }
+  //   return client.signAndBroadcast(address, [msg], grantFee)
+  // }
+  // return client.signAndBroadcast(address, [msg], fee)
+
+  if (gasStation.enable === true) {
+    const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
+    const fee = calculateFee(39000000, gasPrice)
+
+    const grantFee: StdFee = {
+      amount: fee.amount,
+      gas: fee.gas,
+      granter: contractAddress,
+    }
+    return client.execute(
+      address,
+      contractAddress,
+      {
+        sign_up: {
+          pubkey: {
+            x: pubKey[0].toString(),
+            y: pubKey[1].toString(),
+          },
+        },
+      },
+      grantFee,
+    )
+  }
 
   return client.execute(
     address,
@@ -176,7 +242,7 @@ export async function submitPlan(
     encPubkeys: PublicKey
   }[],
 ) {
-  const { contractAddress, chainInfo } = getConfig()
+  const { contractAddress, chainInfo, gasStation } = getConfig()
 
   const msgs: MsgExecuteContractEncodeObject[] = payload.map(({ msg, encPubkeys }) => ({
     typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
@@ -201,8 +267,16 @@ export async function submitPlan(
     }),
   }))
 
-  const gasPrice = GasPrice.fromString('0.025' + chainInfo.currencies[0].coinMinimalDenom)
+  const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
   const fee = calculateFee(20000000 * msgs.length, gasPrice)
 
+  if (gasStation.enable === true) {
+    const grantFee: StdFee = {
+      amount: fee.amount,
+      gas: fee.gas,
+      granter: contractAddress,
+    }
+    return client.signAndBroadcast(address, msgs, grantFee)
+  }
   return client.signAndBroadcast(address, msgs, fee)
 }
