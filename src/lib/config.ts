@@ -33,9 +33,9 @@ const votaChainInfo = {
       coinDecimals: 18,
       coinGeckoId: 'dora',
       gasPriceStep: {
-        low: 0.001,
-        average: 0.0025,
-        high: 0.003,
+        low: 100000000000,
+        average: 100000000000,
+        high: 100000000000,
       },
     },
   ],
@@ -50,8 +50,8 @@ const votaChainInfo = {
   ],
 } as ChainInfo
 const votaTestChainInfo = {
-  chainId: 'doravota-devnet',
-  chainName: 'DoraVota Devnet',
+  chainId: 'vota-testnet',
+  chainName: 'Dora Vota Testnet',
   rpc: 'https://vota-testnet-rpc.dorafactory.org',
   rest: 'https://vota-testnet-rest.dorafactory.org',
   bip44: {
@@ -68,28 +68,28 @@ const votaTestChainInfo = {
   currencies: [
     {
       coinDenom: 'DORA',
-      coinMinimalDenom: 'uDORA',
-      coinDecimals: 6,
+      coinMinimalDenom: 'peaka',
+      coinDecimals: 18,
       coinGeckoId: 'dora',
     },
   ],
   feeCurrencies: [
     {
       coinDenom: 'DORA',
-      coinMinimalDenom: 'uDORA',
-      coinDecimals: 6,
+      coinMinimalDenom: 'peaka',
+      coinDecimals: 18,
       coinGeckoId: 'dora',
       gasPriceStep: {
-        low: 0.001,
-        average: 0.0025,
-        high: 0.003,
+        low: 100000000000,
+        average: 100000000000,
+        high: 100000000000,
       },
     },
   ],
   stakeCurrency: {
     coinDenom: 'DORA',
-    coinMinimalDenom: 'uDORA',
-    coinDecimals: 6,
+    coinMinimalDenom: 'peaka',
+    coinDecimals: 18,
     coinGeckoId: 'dora',
   },
   features: [
@@ -104,16 +104,19 @@ let configInstance = {
     title: '',
     desc: '',
     link: '',
+    status: '',
   },
 
   api:
     config.network === 'VOTA_TEST'
-      ? 'https://vota-testnet-api.dorafactory.org/'
+      ? // ? 'https://vota-testnet-api.dorafactory.org/'
+        'http://localhost:8000'
       : 'https://vota-api.dorafactory.org/',
   chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
   detailUrl:
     config.network === 'VOTA_TEST'
-      ? 'https://vota-testnet.dorafactory.org/round/'
+      ? // ? 'https://vota-testnet.dorafactory.org/round/'
+        'http://localhost:3001/round/'
       : 'https://vota.dorafactory.org/round/',
   contractAddress: '',
   coordPubkey: [0n, 0n] as [bigint, bigint],
@@ -122,6 +125,13 @@ let configInstance = {
   startTime: 0,
   endTime: 0,
   options: config.options,
+
+  gasStation: {
+    enable: false,
+    totalGrant: '0',
+    baseGrant: '0',
+    totalBond: '0',
+  },
 }
 
 export function getConfig() {

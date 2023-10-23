@@ -27,7 +27,8 @@
     "react-dom": "18.2.0",
     "sass": "^1.66.1",
     "typescript": "5.2.2",
-    "yaml-loader": "^0.8.0"
+    "yaml-loader": "^0.8.0",
+    "cosmjs-types": "0.8.0"
   },
   "devDependencies": {
     "eslint-config-prettier": "^9.0.0",
