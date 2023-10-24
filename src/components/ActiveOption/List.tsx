@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import ActiveOptionItem from './Item'
 import styles from './main.module.sass'
 import { IOption } from '@/types'
+import { getConfig } from '@/lib/config'
 
 export default function ActiveOptionList({
   options,
@@ -14,12 +15,13 @@ export default function ActiveOptionList({
   disabled: boolean
   onUpdate: (o: IOption[]) => void
 }) {
+  const { isQuadraticCost } = getConfig()
   const [error, setError] = useState(options.map(() => false))
 
   useEffect(() => {
     const newError = options.map(() => false)
     options.reduce((s, o, i) => {
-      s = s + o.vc
+      s = s + (isQuadraticCost ? o.vc * o.vc : o.vc)
       if (s > max) {
         newError[i] = true
       }
@@ -27,7 +29,7 @@ export default function ActiveOptionList({
     }, 0)
 
     setError(newError)
-  }, [options, max])
+  }, [isQuadraticCost, options, max])
 
   const updateVc = (idx: number, vc: number) => {
     const newActiveOptions: IOption[] = options.map((o) => {

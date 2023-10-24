@@ -120,6 +120,8 @@ let configInstance = {
   coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',
 
+  isQuadraticCost: false,
+
   startTime: 0,
   endTime: 0,
   options: config.options,

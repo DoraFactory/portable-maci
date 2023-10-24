@@ -47,7 +47,7 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
 )
 
 export default function Main() {
-  const { contractAddress, circutType, startTime, endTime } = getConfig()
+  const { contractAddress, circutType, startTime, endTime, isQuadraticCost } = getConfig()
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -59,7 +59,7 @@ export default function Main() {
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
   const [submited, setSubmited] = useState(false)
 
-  const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
+  const usedVc = selectedOptions.reduce((s, o) => s + (isQuadraticCost ? o.vc * o.vc : o.vc), 0)
   const inputError = usedVc > accountStatus.vcbTotal
 
   const submitable = !!usedVc && !!client && !inputError

@@ -19,7 +19,7 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, circuitType }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
@@ -42,6 +42,8 @@ export async function fetchContractInfo(contractAddress: string) {
     contractAddress,
     coordPubkey: [BigInt(r.coordinatorPubkeyX), BigInt(r.coordinatorPubkeyY)],
     circutType: r.circuitName,
+
+    isQuadraticCost: !!Number(r.circuitType),
 
     startTime: Number(r.votingStart) / 1e6,
     endTime: Number(r.votingEnd) / 1e6,

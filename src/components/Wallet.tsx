@@ -46,8 +46,8 @@ export default function Wallet({
     try {
       const chainId = chainParams.chainId
 
-      keplr.experimentalSuggestChain(chainParams)
-      keplr.enable(chainId)
+      await keplr.experimentalSuggestChain(chainParams)
+      await keplr.enable(chainId)
 
       const offlineSigner = keplr.getOfflineSigner(chainId)
       const accounts = await offlineSigner.getAccounts()
