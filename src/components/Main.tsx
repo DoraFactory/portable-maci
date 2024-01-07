@@ -8,6 +8,7 @@ import Wallet from './Wallet'
 import ActiveOptionList from './ActiveOption/List'
 import DateItem from './items/DateItem'
 import Participation from './items/Participation'
+import QVNotice from './items/QVNotice'
 import Tips from './items/Tips'
 
 import styles from './Main.module.sass'
@@ -47,7 +48,7 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
 )
 
 export default function Main() {
-  const { contractAddress, circutType, startTime, endTime } = getConfig()
+  const { contractAddress, circutType, isQv, startTime, endTime } = getConfig()
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -57,9 +58,10 @@ export default function Main() {
 
   const [voteable, setVoteable] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
+  const [submiting, setSubmiting] = useState(false)
   const [submited, setSubmited] = useState(false)
 
-  const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
+  const usedVc = selectedOptions.reduce((s, o) => s + (isQv ? o.vc * o.vc : o.vc), 0)
   const inputError = usedVc > accountStatus.vcbTotal
 
   const submitable = !!usedVc && !!client && !inputError
@@ -121,6 +123,8 @@ export default function Main() {
     const options = selectedOptions.filter((o) => !!o.vc)
 
     try {
+      setSubmiting(true)
+
       const maciAccount = await MACI.genKeypairFromSign(address)
 
       const plan = options.map((o) => {
@@ -138,11 +142,13 @@ export default function Main() {
 
       localStorage.setItem('maci_submited_' + contractAddress, JSON.stringify(options))
 
+      setSubmiting(false)
       setSubmited(true)
       setSelectedOptions(options)
 
       message.success('Voting successful!')
     } catch {
+      setSubmiting(false)
       message.warning('Submission canceled!')
     }
   }
@@ -178,7 +184,7 @@ export default function Main() {
           <DateItem from={startTime} to={endTime} />
           <Participation stats={stats} />
           <VoteOptions
-            voteable={voteable && !submited}
+            voteable={voteable && !submiting && !submited}
             avtiveOptions={selectedOptions}
             onSelect={setSelectedOptions}
           />
@@ -216,6 +222,7 @@ export default function Main() {
               <>
                 <div className={styles.voteDetailTitle}>
                   <h3>
+                    <QVNotice />
                     Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
                     {accountStatus.vcbTotal}
                   </h3>
@@ -225,7 +232,7 @@ export default function Main() {
                 <ActiveOptionList
                   options={selectedOptions}
                   max={accountStatus.vcbTotal}
-                  disabled={submited}
+                  disabled={submiting || submited}
                   onUpdate={setSelectedOptions}
                 />
               </>
@@ -234,11 +241,21 @@ export default function Main() {
             )}
           </div>
           <div className={[common.bento, styles.submitWrapper].join(' ')}>
-            {submited ? (
+            {submiting ? (
               <div>
-                <p className={font.basicInkSecondary}>🎉 Your vote has been submitted.</p>
+                <p className={font.basicInkSecondary}>
+                  Please wait for the on-chain transaction to be completed…
+                </p>
+                <div className={common.button}>Waiting…</div>
+              </div>
+            ) : submited ? (
+              <div>
+                <p className={font.basicInkSecondary}>
+                  {/* 🎉 Your vote has been submitted. */}
+                  ⚠️ Revoting will overwrite your entire last submission.
+                </p>
                 <div className={common.button} c-active="" onClick={revote}>
-                  Start Revote
+                  Overwrite & Revote
                 </div>
               </div>
             ) : (
