@@ -48,7 +48,7 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
 )
 
 export default function Main() {
-  const { contractAddress, circutType, isQv, startTime, endTime } = getConfig()
+  const { contractAddress, circutType, isQv, startTime, endTime, gasStation } = getConfig()
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -261,7 +261,9 @@ export default function Main() {
             ) : (
               <div>
                 <p className={font.basicInkSecondary}>
-                  Please make sure you have sufficient DORA to pay the gas fee.
+                  {gasStation.enable
+                    ? 'The gas station is covering your gas fee.'
+                    : 'Please make sure you have sufficient DORA to pay the gas fee.'}
                 </p>
                 <div
                   className={common.button}
