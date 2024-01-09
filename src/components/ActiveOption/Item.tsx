@@ -74,14 +74,18 @@ export default function ActiveOptionItem({
           />
         </div>
       </div>
-      <div className={styles.vc}>
-        <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
-          Voice credits
-        </p>
-        <p className={[font.basicInkSecondary, font['semibold-body-sb']].join(' ')}>
-          {voiceCredits}
-        </p>
-      </div>
+      {isQv ? (
+        <div className={styles.vc}>
+          <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
+            Voice credits
+          </p>
+          <p className={[font.basicInkSecondary, font['semibold-body-sb']].join(' ')}>
+            {voiceCredits}
+          </p>
+        </div>
+      ) : (
+        ''
+      )}
       {disabled ? (
         ''
       ) : (
