@@ -26,7 +26,7 @@ async function sleep(ts: number) {
   })
 }
 
-const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
+const NeedToSignUp = (props: { voiceCredits: number; signup: () => void; loading: boolean }) => (
   <div className={styles.needToSignUp}>
     <p className={font['regular-body-rg']}>
       After signing up, you will be assigned{' '}
@@ -41,8 +41,12 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
         <i />
       </a>
     </p>
-    <div className={common.button} c-active="true" onClick={props.signup}>
-      Sign Up
+    <div
+      className={common.button}
+      c-active={props.loading ? undefined : ''}
+      onClick={() => !props.loading && props.signup()}
+    >
+      {props.loading ? 'Waiting…' : 'Sign Up'}
     </div>
   </div>
 )
@@ -91,10 +95,12 @@ export default function Main() {
     }
   }
 
+  const [signuping, setSignuping] = useState(false)
   const signup = async () => {
     if (!client) {
       return
     }
+    setSignuping(true)
     try {
       const maciAccount = await MACI.genKeypairFromSign(address)
 
@@ -114,6 +120,7 @@ export default function Main() {
     } catch {
       message.warning('Signup canceled!')
     }
+    setSignuping(false)
   }
 
   const submit = async () => {
@@ -209,7 +216,11 @@ export default function Main() {
               setAddress={setAddress}
             />
             {accountStatus.whitelistCommitment ? (
-              <NeedToSignUp voiceCredits={accountStatus.whitelistCommitment} signup={signup} />
+              <NeedToSignUp
+                voiceCredits={accountStatus.whitelistCommitment}
+                signup={signup}
+                loading={signuping}
+              />
             ) : (
               ''
             )}
