@@ -119,6 +119,7 @@ let configInstance = {
   contractAddress: '',
   coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',
+  isQv: false,
 
   startTime: 0,
   endTime: 0,
@@ -140,5 +141,6 @@ export function updateConfig(config: Partial<typeof configInstance>) {
   configInstance = {
     ...configInstance,
     ...config,
+    isQv: /qv/i.test(config.circutType || ''),
   }
 }

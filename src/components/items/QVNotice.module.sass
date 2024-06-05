@@ -1,0 +1,41 @@
+.notice
+  margin-right: 4px
+  float: left
+  position: relative
+  > svg
+    vertical-align: bottom
+    cursor: pointer
+    fill: var(--basic-ink-secondary)
+    transition: fill 150ms
+
+.popover
+  position: absolute
+  left: 0
+  bottom: 24px
+  width: max-content
+  max-width: 440px
+  padding: 10px 14px
+  background: var(--basic-bg-primary)
+  box-shadow: 0px 16px 24px rgba(33, 33, 44, 0.02), 0px 8px 12px rgba(33, 33, 44, 0.02), 0px 6px 8px rgba(33, 33, 44, 0.02), 0px 4px 6px rgba(33, 33, 44, 0.03), 0px 0px 0.5px rgba(33, 33, 44, 0.08)
+  border-radius: 8px
+
+  opacity: 0
+  transform: translateY(8px)
+  transition-property: opacity, transform
+  transition-duration: 150ms
+  pointer-events: none
+
+  text-transform: none
+  color: var(--basic-ink-primary)
+
+  > b
+    font-weight: 600
+
+.notice:hover
+  > svg
+    vertical-align: bottom
+    cursor: pointer
+    fill: var(--accent-accent-primary)
+  .popover
+    opacity: 1
+    transform: translateY(0)

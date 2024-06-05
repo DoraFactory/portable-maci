@@ -15,15 +15,17 @@
     --border-color: var(--accent-accent-primary)
   &[c-error]
     --border-color: var(--error-error-primary)
-    .vc
+    .item .vc
       background-color: var(--error-error-bg)
+    .vc
       p, input
         color: var(--error-error-primary)
   &[c-disabled]
     cursor: not-allowed
-    .vc
+    .item .vc
       background-color: var(--basic-bg-secondary)
       input:disabled
+        cursor: not-allowed
         color: var(--basic-ink-primary)
 .item
   flex: 1 1 auto
@@ -39,10 +41,13 @@
   background: var(--basic-bg-secondary)
   transition: border .2s
 .vc
-  flex: 0 0 132px
+  flex: 0 0 min-content
+  min-width: 104px
   padding: 10px 14px
   text-align: right
   transition: background .2s
+  p
+    white-space: nowrap
   input
     width: 100%
     font: inherit

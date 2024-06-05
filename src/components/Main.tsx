@@ -8,6 +8,7 @@ import Wallet from './Wallet'
 import ActiveOptionList from './ActiveOption/List'
 import DateItem from './items/DateItem'
 import Participation from './items/Participation'
+import QVNotice from './items/QVNotice'
 import Tips from './items/Tips'
 
 import styles from './Main.module.sass'
@@ -25,7 +26,7 @@ async function sleep(ts: number) {
   })
 }
 
-const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
+const NeedToSignUp = (props: { voiceCredits: number; signup: () => void; loading: boolean }) => (
   <div className={styles.needToSignUp}>
     <p className={font['regular-body-rg']}>
       After signing up, you will be assigned{' '}
@@ -40,14 +41,18 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void }) => (
         <i />
       </a>
     </p>
-    <div className={common.button} c-active="true" onClick={props.signup}>
-      Sign Up
+    <div
+      className={common.button}
+      c-active={props.loading ? undefined : ''}
+      onClick={() => !props.loading && props.signup()}
+    >
+      {props.loading ? 'Waiting…' : 'Sign Up'}
     </div>
   </div>
 )
 
 export default function Main() {
-  const { contractAddress, circutType, startTime, endTime } = getConfig()
+  const { contractAddress, circutType, isQv, startTime, endTime, gasStation } = getConfig()
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -57,9 +62,10 @@ export default function Main() {
 
   const [voteable, setVoteable] = useState(false)
   const [selectedOptions, setSelectedOptions] = useState<IOption[]>([])
+  const [submiting, setSubmiting] = useState(false)
   const [submited, setSubmited] = useState(false)
 
-  const usedVc = selectedOptions.reduce((s, o) => s + o.vc, 0)
+  const usedVc = selectedOptions.reduce((s, o) => s + (isQv ? o.vc * o.vc : o.vc), 0)
   const inputError = usedVc > accountStatus.vcbTotal
 
   const submitable = !!usedVc && !!client && !inputError
@@ -89,10 +95,12 @@ export default function Main() {
     }
   }
 
+  const [signuping, setSignuping] = useState(false)
   const signup = async () => {
     if (!client) {
       return
     }
+    setSignuping(true)
     try {
       const maciAccount = await MACI.genKeypairFromSign(address)
 
@@ -112,6 +120,7 @@ export default function Main() {
     } catch {
       message.warning('Signup canceled!')
     }
+    setSignuping(false)
   }
 
   const submit = async () => {
@@ -121,6 +130,8 @@ export default function Main() {
     const options = selectedOptions.filter((o) => !!o.vc)
 
     try {
+      setSubmiting(true)
+
       const maciAccount = await MACI.genKeypairFromSign(address)
 
       const plan = options.map((o) => {
@@ -138,11 +149,13 @@ export default function Main() {
 
       localStorage.setItem('maci_submited_' + contractAddress, JSON.stringify(options))
 
+      setSubmiting(false)
       setSubmited(true)
       setSelectedOptions(options)
 
       message.success('Voting successful!')
     } catch {
+      setSubmiting(false)
       message.warning('Submission canceled!')
     }
   }
@@ -178,7 +191,7 @@ export default function Main() {
           <DateItem from={startTime} to={endTime} />
           <Participation stats={stats} />
           <VoteOptions
-            voteable={voteable && !submited}
+            voteable={voteable && !submiting && !submited}
             avtiveOptions={selectedOptions}
             onSelect={setSelectedOptions}
           />
@@ -203,7 +216,11 @@ export default function Main() {
               setAddress={setAddress}
             />
             {accountStatus.whitelistCommitment ? (
-              <NeedToSignUp voiceCredits={accountStatus.whitelistCommitment} signup={signup} />
+              <NeedToSignUp
+                voiceCredits={accountStatus.whitelistCommitment}
+                signup={signup}
+                loading={signuping}
+              />
             ) : (
               ''
             )}
@@ -216,6 +233,7 @@ export default function Main() {
               <>
                 <div className={styles.voteDetailTitle}>
                   <h3>
+                    <QVNotice />
                     Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
                     {accountStatus.vcbTotal}
                   </h3>
@@ -225,7 +243,7 @@ export default function Main() {
                 <ActiveOptionList
                   options={selectedOptions}
                   max={accountStatus.vcbTotal}
-                  disabled={submited}
+                  disabled={submiting || submited}
                   onUpdate={setSelectedOptions}
                 />
               </>
@@ -234,17 +252,29 @@ export default function Main() {
             )}
           </div>
           <div className={[common.bento, styles.submitWrapper].join(' ')}>
-            {submited ? (
+            {submiting ? (
               <div>
-                <p className={font.basicInkSecondary}>🎉 Your vote has been submitted.</p>
+                <p className={font.basicInkSecondary}>
+                  Please wait for the on-chain transaction to be completed…
+                </p>
+                <div className={common.button}>Waiting…</div>
+              </div>
+            ) : submited ? (
+              <div>
+                <p className={font.basicInkSecondary}>
+                  {/* 🎉 Your vote has been submitted. */}
+                  ⚠️ Revoting will overwrite your entire last submission.
+                </p>
                 <div className={common.button} c-active="" onClick={revote}>
-                  Start Revote
+                  Overwrite & Revote
                 </div>
               </div>
             ) : (
               <div>
                 <p className={font.basicInkSecondary}>
-                  Please make sure you have sufficient DORA to pay the gas fee.
+                  {gasStation.enable
+                    ? 'The gas station is covering your gas fee.'
+                    : 'Please make sure you have sufficient DORA to pay the gas fee.'}
                 </p>
                 <div
                   className={common.button}
