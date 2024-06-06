@@ -65,6 +65,8 @@ export default function Main() {
   const [submiting, setSubmiting] = useState(false)
   const [submited, setSubmited] = useState(false)
 
+  const [hided, setHided] = useState(false)
+
   const usedVc = selectedOptions.reduce((s, o) => s + (isQv ? o.vc * o.vc : o.vc), 0)
   const inputError = usedVc > accountStatus.vcbTotal
 
@@ -186,7 +188,18 @@ export default function Main() {
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
       <Title />
 
-      <div className={[styles.body, common['elevation-elevation-1']].join(' ')}>
+      <div
+        className={[styles.body, common['elevation-elevation-1'], hided ? styles.hide : ''].join(
+          ' ',
+        )}
+      >
+        {hided ? (
+          <div className={styles.sidebar} onClick={() => setHided(false)}>
+            »
+          </div>
+        ) : (
+          ''
+        )}
         <div className={styles.info}>
           <DateItem from={startTime} to={endTime} />
           <Participation stats={stats} />
@@ -206,7 +219,7 @@ export default function Main() {
             </p>
           </div>
         </div>
-        <div className={styles.wallet}>
+        <div className={styles.wallet} onClick={() => setHided(true)}>
           <div className={[common.bento, styles.walletWrapper].join(' ')}>
             <h3>Connect wallet</h3>
             <Wallet
