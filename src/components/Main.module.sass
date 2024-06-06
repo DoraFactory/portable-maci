@@ -63,7 +63,7 @@
 .voteDetailTitle
   display: flex
   justify-content: space-between
-  gap: 16px
+  gap: 8px 16px
   .alert
     color: var(--error-error-primary)
   .submited
@@ -204,7 +204,7 @@
         content: '«'
         position: absolute
         inset: 0
-        background: #0003
+        background: #0006
         transition: opacity 300ms
         color: var(--basic-bg-primary)
         font-size: 24px
@@ -213,6 +213,7 @@
         justify-content: flex-end
         padding-right: 8%
         cursor: pointer
+        backdrop-filter: blur(2px)
 
   .hide
     .info
@@ -225,3 +226,6 @@
   .submitWrapper
     font-size: 14px
     line-height: 20px
+
+  .voteDetailTitle
+    flex-direction: column

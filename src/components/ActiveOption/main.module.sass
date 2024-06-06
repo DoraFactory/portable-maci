@@ -27,6 +27,12 @@
       input:disabled
         cursor: not-allowed
         color: var(--basic-ink-primary)
+.inputWrapper
+  flex: 1 1 auto
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 0 16px
 .item
   flex: 1 1 auto
   display: flex
@@ -60,3 +66,18 @@
       color: var(--error-error-primary)
 .deleteButton
   cursor: pointer
+
+@media not all and (min-width: 600px)
+  .itemWrapper
+    gap: 8px
+  .item
+    width: 100%
+  .inputWrapper
+    flex-direction: column
+    align-items: flex-end
+  .vcInfo
+    display: flex
+    align-items: baseline
+    gap: 8px
+    justify-content: flex-end
+    padding-top: 0

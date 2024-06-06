@@ -51,41 +51,43 @@ export default function ActiveOptionItem({
       c-error={inputValue && error ? '' : undefined}
       c-disabled={disabled ? '' : undefined}
     >
-      <div className={styles.item}>
-        <div className={styles.info}>
-          <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
-            Option {option.idx + 1}
-          </p>
-          <p className={font['semibold-body-sb']}>{options[option.idx] || '[Undefined]'}</p>
+      <div className={styles.inputWrapper}>
+        <div className={styles.item}>
+          <div className={styles.info}>
+            <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
+              Option {option.idx + 1}
+            </p>
+            <p className={font['semibold-body-sb']}>{options[option.idx] || '[Undefined]'}</p>
+          </div>
+          <div className={styles.vc}>
+            <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
+              {isQv ? 'Votes' : 'Voice credits'}
+            </p>
+            <input
+              type="string"
+              pattern="[0-9]*"
+              placeholder="0"
+              value={inputValue}
+              disabled={disabled}
+              onChange={onChange}
+              onFocus={() => setFocus(true)}
+              onBlur={() => setFocus(false)}
+            />
+          </div>
         </div>
-        <div className={styles.vc}>
-          <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
-            {isQv ? 'Votes' : 'Voice credits'}
-          </p>
-          <input
-            type="string"
-            pattern="[0-9]*"
-            placeholder="0"
-            value={inputValue}
-            disabled={disabled}
-            onChange={onChange}
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-          />
-        </div>
+        {isQv ? (
+          <div className={[styles.vc, styles.vcInfo].join(' ')}>
+            <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
+              Voice credits
+            </p>
+            <p className={[font.basicInkSecondary, font['semibold-body-sb']].join(' ')}>
+              {voiceCredits}
+            </p>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
-      {isQv ? (
-        <div className={styles.vc}>
-          <p className={[font.basicInkSecondary, font['all-caps-caption-sb--caps']].join(' ')}>
-            Voice credits
-          </p>
-          <p className={[font.basicInkSecondary, font['semibold-body-sb']].join(' ')}>
-            {voiceCredits}
-          </p>
-        </div>
-      ) : (
-        ''
-      )}
       {disabled ? (
         ''
       ) : (

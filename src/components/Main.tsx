@@ -193,13 +193,9 @@ export default function Main() {
           ' ',
         )}
       >
-        {hided ? (
-          <div className={styles.sidebar} onClick={() => setHided(false)}>
-            »
-          </div>
-        ) : (
-          ''
-        )}
+        <div className={styles.sidebar} onClick={() => setHided(false)}>
+          »
+        </div>
         <div className={styles.info}>
           <DateItem from={startTime} to={endTime} />
           <Participation stats={stats} />
