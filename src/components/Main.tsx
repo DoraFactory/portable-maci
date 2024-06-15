@@ -74,15 +74,22 @@ export default function Main() {
 
   useEffect(() => {
     MACI.fetchStatus().then(setStats)
+  }, [contractAddress])
 
-    const submitedStorage = localStorage.getItem('maci_submited_' + contractAddress)
+  useEffect(() => {
+    const submitedStorage =
+      localStorage.getItem('maci_submited_' + contractAddress + address) ||
+      localStorage.getItem('maci_submited_' + contractAddress)
     if (submitedStorage) {
       try {
         setSelectedOptions(JSON.parse(submitedStorage))
         setSubmited(true)
       } catch {}
+    } else {
+      setSelectedOptions([])
+      setSubmited(false)
     }
-  }, [contractAddress])
+  }, [contractAddress, address])
 
   const updateClient = async (client: SigningCosmWasmClient | null, address: string) => {
     setClient(client)
@@ -149,7 +156,7 @@ export default function Main() {
 
       await MACI.submitPlan(client, address, payload)
 
-      localStorage.setItem('maci_submited_' + contractAddress, JSON.stringify(options))
+      localStorage.setItem('maci_submited_' + contractAddress + address, JSON.stringify(options))
 
       setSubmiting(false)
       setSubmited(true)
@@ -164,6 +171,7 @@ export default function Main() {
 
   const revote = () => {
     localStorage.removeItem('maci_submited_' + contractAddress)
+    localStorage.removeItem('maci_submited_' + contractAddress + address)
 
     setSubmited(false)
     setSelectedOptions([])
