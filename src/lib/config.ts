@@ -125,6 +125,8 @@ let configInstance = {
   endTime: 0,
   options: config.options,
 
+  results: [] as string[],
+
   gasStation: {
     enable: false,
     totalGrant: '0',

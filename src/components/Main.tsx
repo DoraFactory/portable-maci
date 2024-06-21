@@ -5,6 +5,7 @@ import { message } from 'antd'
 import Title from './Title'
 import VoteOptions from './VoteOptions'
 import Wallet from './Wallet'
+import Result from './Result'
 import ActiveOptionList from './ActiveOption/List'
 import DateItem from './items/DateItem'
 import Participation from './items/Participation'
@@ -52,7 +53,7 @@ const NeedToSignUp = (props: { voiceCredits: number; signup: () => void; loading
 )
 
 export default function Main() {
-  const { contractAddress, circutType, isQv, startTime, endTime, gasStation } = getConfig()
+  const { round, contractAddress, circutType, isQv, startTime, endTime, gasStation } = getConfig()
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -223,86 +224,93 @@ export default function Main() {
             </p>
           </div>
         </div>
+
         <div className={styles.wallet} onClick={() => setHided(true)}>
-          <div className={[common.bento, styles.walletWrapper].join(' ')}>
-            <h3>Connect wallet</h3>
-            <Wallet
-              updateClient={updateClient}
-              accountStatus={accountStatus}
-              address={address}
-              setAddress={setAddress}
-            />
-            {accountStatus.whitelistCommitment ? (
-              <NeedToSignUp
-                voiceCredits={accountStatus.whitelistCommitment}
-                signup={signup}
-                loading={signuping}
-              />
-            ) : (
-              ''
-            )}
-          </div>
-          <div
-            className={[common.bento, styles.voteDetail].join(' ')}
-            c-error={inputError ? '' : undefined}
-          >
-            {voteable ? (
-              <>
-                <div className={styles.voteDetailTitle}>
-                  <h3>
-                    <QVNotice />
-                    Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
-                    {accountStatus.vcbTotal}
-                  </h3>
-                  {VcNotice}
-                </div>
-                {selectedOptions.length ? '' : <Tips />}
-                <ActiveOptionList
-                  options={selectedOptions}
-                  max={accountStatus.vcbTotal}
-                  disabled={submiting || submited}
-                  onUpdate={setSelectedOptions}
+          {round.status === 'Closed' || round.status === 'Tallying' ? (
+            <Result />
+          ) : (
+            <>
+              <div className={[common.bento, styles.walletWrapper].join(' ')}>
+                <h3>Connect wallet</h3>
+                <Wallet
+                  updateClient={updateClient}
+                  accountStatus={accountStatus}
+                  address={address}
+                  setAddress={setAddress}
                 />
-              </>
-            ) : (
-              ''
-            )}
-          </div>
-          <div className={[common.bento, styles.submitWrapper].join(' ')}>
-            {submiting ? (
-              <div>
-                <p className={font.basicInkSecondary}>
-                  Please wait for the on-chain transaction to be completed…
-                </p>
-                <div className={common.button}>Waiting…</div>
+                {accountStatus.whitelistCommitment ? (
+                  <NeedToSignUp
+                    voiceCredits={accountStatus.whitelistCommitment}
+                    signup={signup}
+                    loading={signuping}
+                  />
+                ) : (
+                  ''
+                )}
               </div>
-            ) : submited ? (
-              <div>
-                <p className={font.basicInkSecondary}>
-                  {/* 🎉 Your vote has been submitted. */}
-                  ⚠️ Revoting will overwrite your entire last submission.
-                </p>
-                <div className={common.button} c-active="" onClick={revote}>
-                  Overwrite & Revote
-                </div>
+              <div
+                className={[common.bento, styles.voteDetail].join(' ')}
+                c-error={inputError ? '' : undefined}
+              >
+                {voteable ? (
+                  <>
+                    <div className={styles.voteDetailTitle}>
+                      <h3>
+                        <QVNotice />
+                        Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
+                        {accountStatus.vcbTotal}
+                      </h3>
+                      {VcNotice}
+                    </div>
+                    {selectedOptions.length ? '' : <Tips />}
+                    <ActiveOptionList
+                      options={selectedOptions}
+                      max={accountStatus.vcbTotal}
+                      disabled={submiting || submited}
+                      onUpdate={setSelectedOptions}
+                    />
+                  </>
+                ) : (
+                  ''
+                )}
               </div>
-            ) : (
-              <div>
-                <p className={font.basicInkSecondary}>
-                  {gasStation.enable
-                    ? 'The gas station is covering your gas fee.'
-                    : 'Please make sure you have sufficient DORA to pay the gas fee.'}
-                </p>
-                <div
-                  className={common.button}
-                  c-active={submitable ? '' : undefined}
-                  onClick={submit}
-                >
-                  Submit
-                </div>
+              <div className={[common.bento, styles.submitWrapper].join(' ')}>
+                {submiting ? (
+                  <div>
+                    <p className={font.basicInkSecondary}>
+                      Please wait for the on-chain transaction to be completed…
+                    </p>
+                    <div className={common.button}>Waiting…</div>
+                  </div>
+                ) : submited ? (
+                  <div>
+                    <p className={font.basicInkSecondary}>
+                      {/* 🎉 Your vote has been submitted. */}
+                      ⚠️ Revoting will overwrite your entire last submission.
+                    </p>
+                    <div className={common.button} c-active="" onClick={revote}>
+                      Overwrite & Revote
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p className={font.basicInkSecondary}>
+                      {gasStation.enable
+                        ? 'The gas station is covering your gas fee.'
+                        : 'Please make sure you have sufficient DORA to pay the gas fee.'}
+                    </p>
+                    <div
+                      className={common.button}
+                      c-active={submitable ? '' : undefined}
+                      onClick={submit}
+                    >
+                      Submit
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>

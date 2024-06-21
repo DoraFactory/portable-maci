@@ -31,7 +31,7 @@
   flex: 1 1 auto
   display: flex
   justify-content: space-between
-  align-items: center
+  // align-items: center
   gap: 0 16px
 .item
   flex: 1 1 auto
@@ -46,12 +46,20 @@
   border-right: 1px solid var(--border-color, var(--line-line-secondary))
   background: var(--basic-bg-secondary)
   transition: border .2s
+
+  display: flex
+  flex-direction: column
+  gap: 4px
 .vc
   flex: 0 0 min-content
   min-width: 104px
   padding: 10px 14px
   text-align: right
   transition: background .2s
+
+  display: flex
+  flex-direction: column
+  gap: 4px
   p
     white-space: nowrap
   input
@@ -66,6 +74,11 @@
       color: var(--error-error-primary)
 .deleteButton
   cursor: pointer
+
+.result
+  --border-color: var(--safe-safe-primary)
+  .info
+    background: var(--basic-bg-primary)
 
 @media not all and (min-width: 600px)
   .itemWrapper
