@@ -193,6 +193,9 @@ export default function Main() {
     )
   }
 
+  const now = Date.now()
+  const ended = (endTime && now > endTime) || round.status === 'Closed'
+
   return (
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
       <Title />
@@ -226,7 +229,7 @@ export default function Main() {
         </div>
 
         <div className={styles.wallet} onClick={() => setHided(true)}>
-          {round.status === 'Closed' || round.status === 'Tallying' ? (
+          {ended ? (
             <Result />
           ) : (
             <>

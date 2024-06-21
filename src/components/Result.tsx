@@ -25,7 +25,7 @@ export default function Result() {
     v2: ((v.v2 / totalVotes.v2) * 100).toFixed(1),
   }))
 
-  return round.status === 'Tallying' ? (
+  return round.status !== 'Closed' ? (
     <div className={common.bento}>
       <p className={font['extrabold-headline-eb']}>Voting has ended</p>
       <p className={font['regular-body-rg']}>
