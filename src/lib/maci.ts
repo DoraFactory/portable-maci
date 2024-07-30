@@ -232,7 +232,7 @@ export async function signup(client: SigningCosmWasmClient, address: string, pub
         },
       },
     },
-    fee
+    fee,
   )
 }
 
