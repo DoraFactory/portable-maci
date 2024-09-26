@@ -7,7 +7,6 @@ import { IAccountStatus, IStats } from '@/types'
 
 export async function fetchContractInfo(contractAddress: string) {
   const { api } = getConfig()
-  console.log('api', api)
   const result = await fetch(api, {
     method: 'post',
     mode: 'cors',
@@ -23,7 +22,6 @@ export async function fetchContractInfo(contractAddress: string) {
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
-  console.log('result', result)
   const r = result.data.round
 
   if (!r) {
