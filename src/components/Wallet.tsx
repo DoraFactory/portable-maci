@@ -28,7 +28,7 @@ export default function Wallet({
   const chainParams = getConfig().chainInfo
 
   const addressAbbr =
-    address.slice(0, chainParams.bech32Config.bech32PrefixAccAddr.length + 5) +
+    address.slice(0, chainParams!.bech32Config!.bech32PrefixAccAddr.length + 5) +
     '…' +
     address.slice(-4)
 
