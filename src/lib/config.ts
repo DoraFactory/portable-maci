@@ -109,7 +109,7 @@ let configInstance = {
 
   api:
     config.network === 'VOTA_TEST'
-      ? 'https://vota-testnet-api.dorafactory.org/'
+      ? 'http://3.0.94.169:3000/'
       : 'https://vota-api.dorafactory.org/',
   chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
   detailUrl:
