@@ -100,7 +100,6 @@ const votaTestChainInfo = {
 
 let configInstance = {
   round: {
-    index: 0,
     title: '',
     desc: '',
     link: '',

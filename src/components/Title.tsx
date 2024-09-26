@@ -47,8 +47,8 @@ export default function Title() {
             handleStatusByVotingTime(startTime, endTime, round.status) === 'Ongoing'
               ? [styles['claimed-status'], styles['nomal-name']].join(' ')
               : handleStatusByVotingTime(startTime, endTime, round.status) === 'Tallying'
-              ? [styles['pending-status'], styles['nomal-name']].join(' ')
-              : [styles['expired-status'], styles['nomal-name']].join(' ')
+                ? [styles['pending-status'], styles['nomal-name']].join(' ')
+                : [styles['expired-status'], styles['nomal-name']].join(' ')
           }
         >
           {handleStatusByVotingTime(startTime, endTime, round.status)}
@@ -70,9 +70,7 @@ export default function Title() {
         </div>
       </div>
       <div className={styles.title}>
-        <h1 className={font['extrabold-headline-eb']}>
-          #{round.index} {round.title}
-        </h1>
+        <h1 className={font['extrabold-headline-eb']}>{round.title}</h1>
         <a
           href={url}
           target="_blank"

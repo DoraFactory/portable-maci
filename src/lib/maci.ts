@@ -7,7 +7,7 @@ import { IAccountStatus, IStats } from '@/types'
 
 export async function fetchContractInfo(contractAddress: string) {
   const { api } = getConfig()
-
+  console.log('api', api)
   const result = await fetch(api, {
     method: 'post',
     mode: 'cors',
@@ -19,11 +19,11 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, circuitType }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, circuitType }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
-
+  console.log('result', result)
   const r = result.data.round
 
   if (!r) {
@@ -32,7 +32,6 @@ export async function fetchContractInfo(contractAddress: string) {
 
   updateConfig({
     round: {
-      index: Number(r.roundId),
       title: r.roundTitle,
       desc: r.roundDescription,
       link: r.roundLink,
