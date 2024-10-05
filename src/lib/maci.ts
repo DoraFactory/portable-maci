@@ -40,8 +40,6 @@ export async function fetchContractInfo(contractAddress: string) {
     coordPubkey: [BigInt(r.coordinatorPubkeyX), BigInt(r.coordinatorPubkeyY)],
     circutType: r.circuitName,
 
-    isQuadraticCost: !!Number(r.circuitType),
-
     startTime: Number(r.votingStart) / 1e6,
     endTime: Number(r.votingEnd) / 1e6,
     options: JSON.parse(r.voteOptionMap),

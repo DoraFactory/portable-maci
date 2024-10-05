@@ -120,8 +120,6 @@ let configInstance = {
   circutType: '',
   isQv: false,
 
-  isQuadraticCost: false,
-
   startTime: 0,
   endTime: 0,
   options: config.options,
