@@ -18,7 +18,7 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, results }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, results }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
