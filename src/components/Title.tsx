@@ -14,7 +14,7 @@ export default function Title() {
 
   const handleStatusByVotingTime = (start_time: number, end_time: number, round_status: string) => {
     if (start_time === 0) {
-      return 'Ongoing'
+      return 'Created'
     }
 
     const startTime = new Date(start_time)

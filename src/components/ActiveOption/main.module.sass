@@ -15,16 +15,24 @@
     --border-color: var(--accent-accent-primary)
   &[c-error]
     --border-color: var(--error-error-primary)
-    .vc
+    .item .vc
       background-color: var(--error-error-bg)
+    .vc
       p, input
         color: var(--error-error-primary)
   &[c-disabled]
     cursor: not-allowed
-    .vc
+    .item .vc
       background-color: var(--basic-bg-secondary)
       input:disabled
+        cursor: not-allowed
         color: var(--basic-ink-primary)
+.inputWrapper
+  flex: 1 1 auto
+  display: flex
+  justify-content: space-between
+  // align-items: center
+  gap: 0 16px
 .item
   flex: 1 1 auto
   display: flex
@@ -38,11 +46,22 @@
   border-right: 1px solid var(--border-color, var(--line-line-secondary))
   background: var(--basic-bg-secondary)
   transition: border .2s
+
+  display: flex
+  flex-direction: column
+  gap: 4px
 .vc
-  flex: 0 0 132px
+  flex: 0 0 min-content
+  min-width: 104px
   padding: 10px 14px
   text-align: right
   transition: background .2s
+
+  display: flex
+  flex-direction: column
+  gap: 4px
+  p
+    white-space: nowrap
   input
     width: 100%
     font: inherit
@@ -55,3 +74,23 @@
       color: var(--error-error-primary)
 .deleteButton
   cursor: pointer
+
+.result
+  --border-color: var(--safe-safe-primary)
+  .info
+    background: var(--basic-bg-primary)
+
+@media not all and (min-width: 600px)
+  .itemWrapper
+    gap: 8px
+  .item
+    width: 100%
+  .inputWrapper
+    flex-direction: column
+    align-items: flex-end
+  .vcInfo
+    display: flex
+    align-items: baseline
+    gap: 8px
+    justify-content: flex-end
+    padding-top: 0

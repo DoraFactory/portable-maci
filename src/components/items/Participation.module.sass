@@ -1,13 +1,15 @@
 .statsWrapper
   display: flex
-  align-items: center
+  flex-direction: column
   gap: 16px
   color: var(--basic-ink-secondary)
   > span
     display: flex
     align-items: center
     gap: 8px
+    // white-space: nowrap
   hr
+    display: none
     border: none
     width: 1px
     height: 16px
@@ -15,3 +17,10 @@
   strong
     color: var(--safe-safe-primary)
     font-weight: 600
+
+@media screen and (min-width: 800px)
+  .statsWrapper
+    flex-direction: row
+    align-items: center
+    hr
+      display: block

@@ -18,7 +18,7 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, circuitType }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundId, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, results }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
@@ -45,6 +45,8 @@ export async function fetchContractInfo(contractAddress: string) {
     startTime: Number(r.votingStart) / 1e6,
     endTime: Number(r.votingEnd) / 1e6,
     options: JSON.parse(r.voteOptionMap),
+
+    results: JSON.parse(r.results),
 
     gasStation: {
       enable: r.gasStationEnable,
@@ -194,10 +196,10 @@ export async function signup(client: SigningCosmWasmClient, address: string, pub
   // }
   // return client.signAndBroadcast(address, [msg], fee)
 
-  if (gasStation.enable === true) {
-    const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
-    const fee = calculateFee(39000000, gasPrice)
+  const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
+  const fee = calculateFee(60000000, gasPrice)
 
+  if (gasStation.enable === true) {
     const grantFee: StdFee = {
       amount: fee.amount,
       gas: fee.gas,
@@ -229,7 +231,7 @@ export async function signup(client: SigningCosmWasmClient, address: string, pub
         },
       },
     },
-    'auto',
+    fee,
   )
 }
 

@@ -49,7 +49,7 @@ export default function Wallet({
       await keplr.experimentalSuggestChain(chainParams)
       await keplr.enable(chainId)
 
-      const offlineSigner = keplr.getOfflineSigner(chainId)
+      const offlineSigner = await keplr.getOfflineSignerAuto(chainId)
       const accounts = await offlineSigner.getAccounts()
       if (!accounts.length) {
         message.warning('No Accounts!')

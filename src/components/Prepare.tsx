@@ -29,7 +29,9 @@ export default function Wallet({ onLoaded }: { onLoaded: () => void }) {
     <div>
       <div className={[styles.body, common['elevation-elevation-1']].join(' ')}>
         <h1 className={font['extrabold-headline-eb']}>Load contract information...</h1>
-        <p className={[firaCode.className, font['regular-note-rg']].join(' ')}>{contract}</p>
+        <p className={[firaCode.className, font['regular-note-rg'], styles.contract].join(' ')}>
+          {contract}
+        </p>
         {error ? <p className={styles.error}>MACI round does not exist!</p> : ''}
       </div>
     </div>
