@@ -1,5 +1,5 @@
 # VOTA_TEST | VOTA
-network: VOTA_TEST
+network: VOTA
 
 ### These parameters will be ignored in the new version of the MACI contract
 
