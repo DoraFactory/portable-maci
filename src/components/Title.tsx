@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import styles from './Main.module.sass'
+import styles from './Main/index.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'
 

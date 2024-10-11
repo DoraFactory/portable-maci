@@ -118,7 +118,10 @@ let configInstance = {
   contractAddress: '',
   coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',
+  maciType: 'MACI' as 'MACI' | 'aMACI',
   isQv: false,
+
+  voiceCredit: 0,
 
   startTime: 0,
   endTime: 0,

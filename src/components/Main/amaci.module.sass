@@ -1,0 +1,28 @@
+.inputKey
+  display: flex
+  flex-direction: column
+  gap: 8px
+  textarea
+    font: inherit
+    padding: 11px 17px
+    border-radius: 8px
+    border: 1px solid var(--line-line-secondary)
+    outline: none
+    background: none
+    resize: none
+    &:invalid
+      color: var(--error-error-primary)
+    &::placeholder
+      color: var(--basic-ink-secondary)
+.button
+  cursor: pointer
+
+.walletWrapper
+  min-height: 178px
+  display: flex
+  flex-direction: column
+  gap: 24px
+  > section
+    display: flex
+    flex-direction: column
+    gap: 16px

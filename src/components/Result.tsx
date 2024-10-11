@@ -2,7 +2,7 @@
 
 import ActiveOptionResult from './ActiveOption/Result'
 
-import styles from './Main.module.sass'
+import styles from './Main/index.module.sass'
 import lists from './ActiveOption/main.module.sass'
 import common from '@/styles/common.module.sass'
 import font from '@/styles/font.module.sass'

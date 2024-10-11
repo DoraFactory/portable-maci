@@ -18,7 +18,7 @@ export async function fetchContractInfo(contractAddress: string) {
     body: JSON.stringify({
       operationName: null,
       query:
-        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, gasStationEnable, totalGrant, baseGrant, totalBond, results }}',
+        'query ($contractAddress: String!) { round(id: $contractAddress) { operator, circuitName, status, votingStart, votingEnd, roundTitle, roundDescription, roundLink, coordinatorPubkeyX, coordinatorPubkeyY, voteOptionMap, maciType, voiceCreditAmount, gasStationEnable, totalGrant, baseGrant, totalBond, results }}',
       variables: { contractAddress },
     }),
   }).then((response) => response.json())
@@ -39,6 +39,10 @@ export async function fetchContractInfo(contractAddress: string) {
     contractAddress,
     coordPubkey: [BigInt(r.coordinatorPubkeyX), BigInt(r.coordinatorPubkeyY)],
     circutType: r.circuitName,
+    maciType: r.maciType,
+
+    /** aMACI 专用 */
+    voiceCredit: Number(r.voiceCreditAmount),
 
     startTime: Number(r.votingStart) / 1e6,
     endTime: Number(r.votingEnd) / 1e6,
@@ -86,23 +90,42 @@ export async function fetchStatus(): Promise<IStats> {
   }
 }
 
-export async function fetchWhitelistCommitment(client: SigningCosmWasmClient, address: string) {
+export async function fetchWhitelistCommitment(
+  client: SigningCosmWasmClient,
+  address: string,
+  voiceCredit: number,
+) {
   const { contractAddress } = getConfig()
-  const whitelistCommitment = await client
-    .queryContractSmart(contractAddress, {
-      white_balance_of: {
-        sender: address,
-      },
-    })
-    .then((n: string) => Number(n))
-    .catch(() => 0)
 
-  return whitelistCommitment
+  if (voiceCredit) {
+    const isWhiteList = await client
+      .queryContractSmart(contractAddress, {
+        is_white_list: {
+          sender: address,
+        },
+      })
+      .then((n: boolean) => n)
+      .catch(() => false)
+
+    return isWhiteList ? voiceCredit : 0
+  } else {
+    const whitelistCommitment = await client
+      .queryContractSmart(contractAddress, {
+        white_balance_of: {
+          sender: address,
+        },
+      })
+      .then((n: string) => Number(n))
+      .catch(() => 0)
+
+    return whitelistCommitment
+  }
 }
 
 export async function fetchAccountStatus(
   client: SigningCosmWasmClient,
   address: string,
+  voiceCredit: number,
 ): Promise<IAccountStatus> {
   const { contractAddress } = getConfig()
 
@@ -133,7 +156,7 @@ export async function fetchAccountStatus(
       whitelistCommitment: 0,
     }
   } else {
-    const whitelistCommitment = await fetchWhitelistCommitment(client, address)
+    const whitelistCommitment = await fetchWhitelistCommitment(client, address, voiceCredit)
 
     return {
       stateIdx: -1,
