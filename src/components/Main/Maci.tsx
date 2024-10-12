@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { message } from 'antd'
 
@@ -6,7 +6,7 @@ import Wallet from '../Wallet'
 import ActiveOptionList from '../ActiveOption/List'
 import QVNotice from '../items/QVNotice'
 import Tips from '../items/Tips'
-import { useCtx } from './ctx'
+import { MainContext } from './ctx'
 
 import styles from './index.module.sass'
 import common from '@/styles/common.module.sass'
@@ -60,7 +60,7 @@ export default function Main() {
     setSubmiting,
     setSubmited,
     setSelectedOptions,
-  } = useCtx()
+  } = useContext(MainContext)
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -192,12 +192,19 @@ export default function Main() {
     <>
       <div className={[common.bento, styles.walletWrapper].join(' ')}>
         <h3>Connect wallet</h3>
-        <Wallet
-          updateClient={updateClient}
-          accountStatus={accountStatus}
-          address={address}
-          setAddress={setAddress}
-        />
+        <div className={styles.content}>
+          <Wallet updateClient={updateClient} address={address} setAddress={setAddress} />
+          {accountStatus.stateIdx < 0 && !accountStatus.whitelistCommitment ? (
+            <p
+              className={[styles.notice, font['regular-note-rg']].join(' ')}
+              c-error={address ? '' : undefined}
+            >
+              Only addresses on the allowlist can sign up and vote in this round.
+            </p>
+          ) : (
+            ''
+          )}
+        </div>
         {accountStatus.whitelistCommitment ? (
           <NeedToSignUp
             voiceCredits={accountStatus.whitelistCommitment}

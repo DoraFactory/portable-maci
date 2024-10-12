@@ -55,6 +55,15 @@
 
 .walletWrapper
   min-height: 178px
+  .content
+    display: flex
+    flex-direction: column
+    gap: 8px
+  .notice
+    color: var(--basic-ink-secondary)
+    transition: color .1s 1s
+    &[c-error]
+      color: var(--error-error-primary)
 
 .voteDetail
   flex: 1 1 auto

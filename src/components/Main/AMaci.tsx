@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { message } from 'antd'
 
@@ -6,7 +6,7 @@ import Wallet from '../Wallet'
 import ActiveOptionList from '../ActiveOption/List'
 import QVNotice from '../items/QVNotice'
 import Tips from '../items/Tips'
-import { useCtx } from './ctx'
+import { MainContext } from './ctx'
 
 import styles from './index.module.sass'
 import amaciStyles from './amaci.module.sass'
@@ -53,15 +53,17 @@ export default function Main() {
   const { contractAddress, isQv, gasStation, voiceCredit } = getConfig()
 
   const {
+    // signuping,
     voteable,
     submiting,
     submited,
     selectedOptions,
+    // setSignuping,
     setVoteable,
     setSubmiting,
     setSubmited,
     setSelectedOptions,
-  } = useCtx()
+  } = useContext(MainContext)
 
   const [address, setAddress] = useState<string>('')
   const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
@@ -195,39 +197,48 @@ export default function Main() {
     setInputKey(v)
   }
 
+  const [signuped, setSignuped] = useState(true) // TODO
+
   return (
     <>
       <div className={[common.bento, amaciStyles.walletWrapper].join(' ')}>
-        <section>
-          <h3>aMACI login</h3>
-          <div className={amaciStyles.inputKey}>
-            <textarea
-              value={inputKey}
-              onChange={onChange}
-              rows={7}
-              placeholder="Enter your aMACI key…"
-            />
-            <p className={[font.basicInkSecondary, font['regular-note-rg']].join(' ')}>
-              If you haven’t got an aMACI key,{' '}
-              <span
-                className={[amaciStyles.button, common.externalLink, font.accentAccentPrimary].join(
-                  ' ',
-                )}
-              >
-                please complete your aMACI signup first <i />
-              </span>
-            </p>
-          </div>
-        </section>
+        {signuped ? (
+          ''
+        ) : (
+          <section>
+            <h3>aMACI login</h3>
+            <div className={amaciStyles.inputKey}>
+              <textarea
+                value={inputKey}
+                onChange={onChange}
+                rows={7}
+                placeholder="Enter your aMACI key…"
+              />
+              <p className={[font.basicInkSecondary, font['regular-note-rg']].join(' ')}>
+                If you haven’t got an aMACI key,{' '}
+                <span
+                  onClick={() => setSignuping(true)}
+                  className={[
+                    amaciStyles.button,
+                    common.externalLink,
+                    font.accentAccentPrimary,
+                  ].join(' ')}
+                >
+                  please complete your aMACI signup first <i />
+                </span>
+              </p>
+            </div>
+          </section>
+        )}
 
         <section>
           <h3>Connect wallet</h3>
-          <Wallet
-            updateClient={updateClient}
-            accountStatus={accountStatus}
-            address={address}
-            setAddress={setAddress}
-          />
+          <div className={amaciStyles.inputKey}>
+            <Wallet updateClient={updateClient} address={address} setAddress={setAddress} />
+            <p className={[font.basicInkSecondary, font['regular-note-rg']].join(' ')}>
+              You can use any wallet address with sufficient DORA for gas fees.
+            </p>
+          </div>
           {accountStatus.whitelistCommitment ? (
             <NeedToSignUp
               voiceCredits={accountStatus.whitelistCommitment}
@@ -239,67 +250,77 @@ export default function Main() {
           )}
         </section>
 
-        <div>
-          <div className={common.button}>Log in to Vote</div>
-        </div>
-      </div>
-      <div
-        className={[common.bento, styles.voteDetail].join(' ')}
-        c-error={inputError ? '' : undefined}
-      >
-        {voteable ? (
-          <>
-            <div className={styles.voteDetailTitle}>
-              <h3>
-                <QVNotice />
-                Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
-                {accountStatus.vcbTotal}
-              </h3>
-              {VcNotice}
-            </div>
-            {selectedOptions.length ? '' : <Tips />}
-            <ActiveOptionList
-              options={selectedOptions}
-              max={accountStatus.vcbTotal}
-              disabled={submiting || submited}
-              onUpdate={setSelectedOptions}
-            />
-          </>
-        ) : (
+        {signuped ? (
           ''
-        )}
-      </div>
-      <div className={[common.bento, styles.submitWrapper].join(' ')}>
-        {submiting ? (
-          <div>
-            <p className={font.basicInkSecondary}>
-              Please wait for the on-chain transaction to be completed…
-            </p>
-            <div className={common.button}>Waiting…</div>
-          </div>
-        ) : submited ? (
-          <div>
-            <p className={font.basicInkSecondary}>
-              {/* 🎉 Your vote has been submitted. */}
-              ⚠️ Revoting will overwrite your entire last submission.
-            </p>
-            <div className={common.button} c-active="" onClick={revote}>
-              Overwrite & Revote
-            </div>
-          </div>
         ) : (
           <div>
-            <p className={font.basicInkSecondary}>
-              {gasStation.enable
-                ? 'The gas station is covering your gas fee.'
-                : 'Please make sure you have sufficient DORA to pay the gas fee.'}
-            </p>
-            <div className={common.button} c-active={submitable ? '' : undefined} onClick={submit}>
-              Submit
-            </div>
+            <div className={common.button}>Log in to Vote</div>
           </div>
         )}
       </div>
+      {voteable ? (
+        <div
+          className={[common.bento, styles.voteDetail].join(' ')}
+          c-error={inputError ? '' : undefined}
+        >
+          <div className={styles.voteDetailTitle}>
+            <h3>
+              <QVNotice />
+              Voice credits: <span className={styles.usedVc}>{usedVc}</span>/
+              {accountStatus.vcbTotal}
+            </h3>
+            {VcNotice}
+          </div>
+          {selectedOptions.length ? '' : <Tips />}
+          <ActiveOptionList
+            options={selectedOptions}
+            max={accountStatus.vcbTotal}
+            disabled={submiting || submited}
+            onUpdate={setSelectedOptions}
+          />
+        </div>
+      ) : (
+        ''
+      )}
+      {signuped ? (
+        <div className={[common.bento, styles.submitWrapper].join(' ')}>
+          {submiting ? (
+            <div>
+              <p className={font.basicInkSecondary}>
+                Please wait for the on-chain transaction to be completed…
+              </p>
+              <div className={common.button}>Waiting…</div>
+            </div>
+          ) : submited ? (
+            <div>
+              <p className={font.basicInkSecondary}>
+                {/* 🎉 Your vote has been submitted. */}
+                ⚠️ Revoting will overwrite your entire last submission.
+              </p>
+              <div className={common.button} c-active="" onClick={revote}>
+                Overwrite & Revote
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className={font.basicInkSecondary}>
+                {gasStation.enable
+                  ? 'The gas station is covering your gas fee.'
+                  : 'Please make sure you have sufficient DORA to pay the gas fee.'}
+              </p>
+              <div
+                className={common.button}
+                c-active={submitable ? '' : undefined}
+                onClick={submit}
+              >
+                Submit
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        ''
+      )}
     </>
   )
 }

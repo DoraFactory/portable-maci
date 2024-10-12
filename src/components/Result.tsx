@@ -21,8 +21,8 @@ export default function Result() {
   }))
   const totalVotes = votes.reduce((s, c) => ({ v: s.v + c.v, v2: s.v2 + c.v2 }), { v: 0, v2: 0 })
   const resultsList = votes.map((v) => ({
-    v: ((v.v / totalVotes.v) * 100).toFixed(1),
-    v2: ((v.v2 / totalVotes.v2) * 100).toFixed(1),
+    v: ((v.v / (totalVotes.v || 1)) * 100).toFixed(1),
+    v2: ((v.v2 / (totalVotes.v2 || 1)) * 100).toFixed(1),
   }))
 
   return round.status !== 'Closed' ? (

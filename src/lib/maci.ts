@@ -122,6 +122,30 @@ export async function fetchWhitelistCommitment(
   }
 }
 
+export async function fetchStateIdxByPubKey(pubKey: bigint[]): Promise<number> {
+  const { api, contractAddress } = getConfig()
+  const result = await fetch(api, {
+    method: 'post',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      operationName: null,
+      query:
+        'query ($contractAddress: String $pubKey: String) { signUpEvents(first: 1 filter: { contractAddress: { equalTo: $contractAddress } pubKey: { equalTo: $pubKey } }) { nodes { stateIdx } } }',
+      variables: { contractAddress, pubKey: pubKey.map((n) => `"${n}"`).join(',') },
+    }),
+  })
+    .then((response) => response.json())
+    .then((res: any) => res.data.signUpEvents.nodes[0].stateIdx)
+    .catch(() => -1)
+
+  return result
+}
+
 export async function fetchAccountStatus(
   client: SigningCosmWasmClient,
   address: string,
@@ -131,24 +155,36 @@ export async function fetchAccountStatus(
 
   let stateIdx = ''
   let balance = ''
-  stateIdx = await client
-    .queryContractSmart(contractAddress, {
-      get_state_idx_inc: {
-        address,
-      },
-    })
-    .catch(() => '')
-
-  stateIdx = (Number(stateIdx) - 1 || 0).toString()
-
-  if (stateIdx !== '-1') {
-    balance = await client
+  if (voiceCredit) {
+    // aMACI
+    const res = await fetchStateIdxByPubKey([1n, 1n]) // TODO
+    stateIdx = res.toString()
+  } else {
+    // MACI
+    stateIdx = await client
       .queryContractSmart(contractAddress, {
-        get_voice_credit_balance: {
-          index: stateIdx,
+        get_state_idx_inc: {
+          address,
         },
       })
-      .catch(() => '0')
+      .catch((error) => {
+        console.log(error)
+        return ''
+      })
+
+    stateIdx = (Number(stateIdx) - 1 || 0).toString()
+  }
+
+  if (stateIdx !== '-1') {
+    balance =
+      voiceCredit ||
+      (await client
+        .queryContractSmart(contractAddress, {
+          get_voice_credit_balance: {
+            index: stateIdx,
+          },
+        })
+        .catch(() => '0'))
 
     return {
       stateIdx: Number(stateIdx),

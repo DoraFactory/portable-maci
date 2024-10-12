@@ -10,17 +10,14 @@ import font from '@/styles/font.module.sass'
 import disconnectIcon from '@/assets/icons/disconnect.svg'
 import keplrLogo from '@/assets/logos/keplr.svg'
 import { getConfig } from '@/lib/config'
-import { IAccountStatus } from '@/types'
 
 const firaCode = Fira_Code({ subsets: ['latin'] })
 
 export default function Wallet({
-  accountStatus,
   updateClient,
   address,
   setAddress,
 }: {
-  accountStatus: IAccountStatus
   updateClient: (c: SigningCosmWasmClient | null, address: string) => void
   address: string
   setAddress: (a: string) => void
@@ -102,16 +99,6 @@ export default function Wallet({
           </div>
         )}
       </div>
-      {accountStatus.stateIdx < 0 && !accountStatus.whitelistCommitment ? (
-        <p
-          className={[styles.notice, font['regular-note-rg']].join(' ')}
-          c-error={address ? '' : undefined}
-        >
-          Only addresses on the allowlist can sign up and vote in this round.
-        </p>
-      ) : (
-        ''
-      )}
     </div>
   )
 }

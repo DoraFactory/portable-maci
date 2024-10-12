@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
+import Signup from './Signup'
 import Title from './Title'
 import VoteOptions from './VoteOptions'
 import Result from './Result'
 
-import { useCtx } from './Main/ctx'
+import { MainContext } from './Main/ctx'
 import MaciComp from './Main/Maci'
 import AMaciComp from './Main/AMaci'
 
@@ -22,7 +23,8 @@ import { getConfig } from '@/lib/config'
 export default function Main() {
   const { round, contractAddress, circutType, maciType, startTime, endTime } = getConfig()
 
-  const { voteable, submiting, submited, selectedOptions, setSelectedOptions } = useCtx()
+  const { signuping, voteable, submiting, submited, selectedOptions, setSelectedOptions } =
+    useContext(MainContext)
 
   const [stats, setStats] = useState<IStats>(emptyStats())
 
@@ -37,7 +39,9 @@ export default function Main() {
 
   const ContentComp = maciType === 'aMACI' ? AMaciComp : MaciComp
 
-  return (
+  return signuping ? (
+    <Signup />
+  ) : (
     <div className={[styles.main, font['regular-body-rg']].join(' ')}>
       <Title />
 
