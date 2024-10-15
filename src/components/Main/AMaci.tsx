@@ -15,50 +15,18 @@ import font from '@/styles/font.module.sass'
 
 import { IAccountStatus, emptyAccountStatus } from '@/types'
 import * as MACI from '@/lib/maci'
-import { batchGenMessage } from '@/lib/circom'
+import { Account, batchGenMessage, privateKeyFromTxt } from '@/lib/circom'
 import { getConfig } from '@/lib/config'
-
-async function sleep(ts: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ts)
-  })
-}
-
-const NeedToSignUp = (props: { voiceCredits: number; signup: () => void; loading: boolean }) => (
-  <div className={styles.needToSignUp}>
-    <p className={font['regular-body-rg']}>
-      After signing up, you will be assigned{' '}
-      <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>.{' '}
-      <a
-        href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
-        target="_blank"
-        className={[font.accentAccentPrimary, common.externalLink].join(' ')}
-        rel="noopener noreferrer"
-      >
-        Learn more about MACI.
-        <i />
-      </a>
-    </p>
-    <div
-      className={common.button}
-      c-active={props.loading ? undefined : ''}
-      onClick={() => !props.loading && props.signup()}
-    >
-      {props.loading ? 'Waiting…' : 'Sign Up'}
-    </div>
-  </div>
-)
 
 export default function Main() {
   const { contractAddress, isQv, gasStation, voiceCredit } = getConfig()
 
   const {
-    // signuping,
     voteable,
     submiting,
     submited,
     selectedOptions,
-    // setSignuping,
+    setSignuping,
     setVoteable,
     setSubmiting,
     setSubmited,
@@ -75,61 +43,25 @@ export default function Main() {
 
   const submitable = !!usedVc && !!client && !inputError
 
+  const [maciAccount, setMaciAccount] = useState<Account | null>(null)
+
   useEffect(() => {
-    const submitedStorage =
-      localStorage.getItem('maci_submited_' + contractAddress + address) ||
-      localStorage.getItem('maci_submited_' + contractAddress)
-    if (submitedStorage) {
-      try {
-        setSelectedOptions(JSON.parse(submitedStorage))
-        setSubmited(true)
-      } catch {}
-    } else {
-      setSelectedOptions([])
-      setSubmited(false)
-    }
-  }, [contractAddress, address, setSelectedOptions, setSubmited])
-
-  const updateClient = async (client: SigningCosmWasmClient | null, address: string) => {
-    setClient(client)
-
-    if (client) {
-      const status = await MACI.fetchAccountStatus(client, address, voiceCredit)
-      setAccountStatus(status)
-      setVoteable(status.stateIdx >= 0)
-    } else {
-      setAccountStatus(emptyAccountStatus())
-      setVoteable(false)
-    }
-  }
-
-  const [signuping, setSignuping] = useState(false)
-  const signup = async () => {
-    if (!client) {
-      return
-    }
-    setSignuping(true)
-    try {
-      const maciAccount = await MACI.genKeypairFromSign(address)
-
-      await MACI.signup(client, address, maciAccount.pubKey)
-
-      message.success('Signup successful!')
-
-      while (true) {
-        const status = await MACI.fetchAccountStatus(client, address, voiceCredit)
-        setAccountStatus(status)
-        if (status.stateIdx >= 0) {
-          setVoteable(true)
-          break
-        }
-        await sleep(3000)
+    if (maciAccount) {
+      const submitedStorage = localStorage.getItem(
+        'maci_submited_' + contractAddress + maciAccount.pubKey[0].toString(),
+      )
+      if (submitedStorage) {
+        try {
+          setSelectedOptions(JSON.parse(submitedStorage))
+          setSubmited(true)
+          return
+        } catch {}
       }
-    } catch {
-      message.warning('Signup canceled!')
     }
-    setSignuping(false)
-  }
+
+    setSelectedOptions([])
+    setSubmited(false)
+  }, [contractAddress, maciAccount, setSelectedOptions, setSubmited])
 
   const submit = async () => {
     if (!submitable) {
@@ -138,9 +70,10 @@ export default function Main() {
     const options = selectedOptions.filter((o) => !!o.vc)
 
     try {
-      setSubmiting(true)
-
-      const maciAccount = await MACI.genKeypairFromSign(address)
+      const maciAccount = privateKeyFromTxt(inputKey)
+      if (!maciAccount) {
+        return
+      }
 
       const plan = options.map((o) => {
         return [o.idx, o.vc] as [number, number]
@@ -152,6 +85,8 @@ export default function Main() {
         getConfig().coordPubkey,
         plan,
       )
+
+      setSubmiting(true)
 
       await MACI.submitPlan(client, address, payload)
 
@@ -197,12 +132,46 @@ export default function Main() {
     setInputKey(v)
   }
 
-  const [signuped, setSignuped] = useState(true) // TODO
+  const [logining, setLogining] = useState(false)
+  const login = async () => {
+    if (!inputKey || !address || logining) {
+      return
+    }
+
+    const maciAccount = privateKeyFromTxt(inputKey)
+    if (!maciAccount) {
+      message.warning('Invalid aMACI key!')
+      setInputKey('')
+      return
+    }
+
+    setLogining(true)
+    const stateIdx = await MACI.fetchStateIdxByPubKey(maciAccount.pubKey)
+    setLogining(false)
+    if (stateIdx < 0) {
+      message.warning('Unregistered aMACI key!')
+      return
+    }
+
+    setAccountStatus({
+      stateIdx,
+      vcbTotal: voiceCredit,
+      whitelistCommitment: 0,
+    })
+    setMaciAccount(maciAccount)
+    setVoteable(true)
+  }
+
+  useEffect(() => {
+    if (!inputKey) {
+      setMaciAccount(null)
+    }
+  }, [inputKey])
 
   return (
     <>
       <div className={[common.bento, amaciStyles.walletWrapper].join(' ')}>
-        {signuped ? (
+        {maciAccount ? (
           ''
         ) : (
           <section>
@@ -234,27 +203,24 @@ export default function Main() {
         <section>
           <h3>Connect wallet</h3>
           <div className={amaciStyles.inputKey}>
-            <Wallet updateClient={updateClient} address={address} setAddress={setAddress} />
+            <Wallet updateClient={setClient} address={address} setAddress={setAddress} />
             <p className={[font.basicInkSecondary, font['regular-note-rg']].join(' ')}>
               You can use any wallet address with sufficient DORA for gas fees.
             </p>
           </div>
-          {accountStatus.whitelistCommitment ? (
-            <NeedToSignUp
-              voiceCredits={accountStatus.whitelistCommitment}
-              signup={signup}
-              loading={signuping}
-            />
-          ) : (
-            ''
-          )}
         </section>
 
-        {signuped ? (
+        {maciAccount ? (
           ''
         ) : (
           <div>
-            <div className={common.button}>Log in to Vote</div>
+            <div
+              c-active={inputKey && address && !logining ? '' : undefined}
+              className={common.button}
+              onClick={login}
+            >
+              Log in to Vote
+            </div>
           </div>
         )}
       </div>
@@ -282,7 +248,7 @@ export default function Main() {
       ) : (
         ''
       )}
-      {signuped ? (
+      {maciAccount ? (
         <div className={[common.bento, styles.submitWrapper].join(' ')}>
           {submiting ? (
             <div>

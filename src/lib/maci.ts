@@ -98,6 +98,7 @@ export async function fetchWhitelistCommitment(
   const { contractAddress } = getConfig()
 
   if (voiceCredit) {
+    // aMACI
     const isWhiteList = await client
       .queryContractSmart(contractAddress, {
         is_white_list: {
@@ -109,6 +110,7 @@ export async function fetchWhitelistCommitment(
 
     return isWhiteList ? voiceCredit : 0
   } else {
+    // MACI
     const whitelistCommitment = await client
       .queryContractSmart(contractAddress, {
         white_balance_of: {
@@ -155,25 +157,25 @@ export async function fetchAccountStatus(
 
   let stateIdx = ''
   let balance = ''
-  if (voiceCredit) {
-    // aMACI
-    const res = await fetchStateIdxByPubKey([1n, 1n]) // TODO
-    stateIdx = res.toString()
-  } else {
-    // MACI
-    stateIdx = await client
-      .queryContractSmart(contractAddress, {
-        get_state_idx_inc: {
-          address,
-        },
-      })
-      .catch((error) => {
-        console.log(error)
-        return ''
-      })
 
-    stateIdx = (Number(stateIdx) - 1 || 0).toString()
-  }
+  // 暂时不需要使用 pubKey 查询 stateIdx
+
+  // const res = await fetchStateIdxByPubKey([1n, 1n])
+  // stateIdx = res.toString()
+
+  // MACI & aMACI 逻辑一致
+  stateIdx = await client
+    .queryContractSmart(contractAddress, {
+      get_state_idx_inc: {
+        address,
+      },
+    })
+    .catch((error) => {
+      console.log(error)
+      return ''
+    })
+
+  stateIdx = (Number(stateIdx) - 1 || 0).toString()
 
   if (stateIdx !== '-1') {
     balance =
