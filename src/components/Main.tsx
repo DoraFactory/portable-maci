@@ -8,6 +8,7 @@ import Result from './Result'
 import { MainContext } from './Main/ctx'
 import MaciComp from './Main/Maci'
 import AMaciComp from './Main/AMaci'
+import KeyManager from './KeyManager'
 
 import DateItem from './items/DateItem'
 import Participation from './items/Participation'
@@ -54,6 +55,7 @@ export default function Main() {
           »
         </div>
         <div className={styles.info}>
+          <KeyManager />
           <DateItem from={startTime} to={endTime} />
           <Participation stats={stats} />
           <VoteOptions

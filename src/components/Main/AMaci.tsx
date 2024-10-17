@@ -26,11 +26,13 @@ export default function Main() {
     submiting,
     submited,
     selectedOptions,
+    maciAccount,
     setSignuping,
     setVoteable,
     setSubmiting,
     setSubmited,
     setSelectedOptions,
+    setMaciAccount,
   } = useContext(MainContext)
 
   const [address, setAddress] = useState<string>('')
@@ -42,8 +44,6 @@ export default function Main() {
   const inputError = usedVc > accountStatus.vcbTotal
 
   const submitable = !!usedVc && !!client && !inputError
-
-  const [maciAccount, setMaciAccount] = useState<Account | null>(null)
 
   useEffect(() => {
     if (maciAccount) {
@@ -161,12 +161,6 @@ export default function Main() {
     setMaciAccount(maciAccount)
     setVoteable(true)
   }
-
-  useEffect(() => {
-    if (!inputKey) {
-      setMaciAccount(null)
-    }
-  }, [inputKey])
 
   return (
     <>
