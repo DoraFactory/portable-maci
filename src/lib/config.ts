@@ -1,6 +1,6 @@
 import { ChainInfo } from '@keplr-wallet/types'
 
-import config from '@/../config.yaml'
+// import config from '@/../config.yaml'
 
 const votaChainInfo = {
   chainId: 'vota-ash',
@@ -106,15 +106,9 @@ let configInstance = {
     status: '',
   },
 
-  api:
-    config.network === 'VOTA_TEST'
-      ? 'https://vota-testnet-api.dorafactory.org/'
-      : 'https://vota-api.dorafactory.org/',
-  chainInfo: config.network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
-  detailUrl:
-    config.network === 'VOTA_TEST'
-      ? 'https://vota-testnet.dorafactory.org/round/'
-      : 'https://vota.dorafactory.org/round/',
+  api: 'https://vota-testnet-api.dorafactory.org/',
+  chainInfo: votaTestChainInfo,
+  detailUrl: 'https://vota-testnet.dorafactory.org/round/',
   contractAddress: '',
   coordPubkey: [0n, 0n] as [bigint, bigint],
   circutType: '',
@@ -125,7 +119,7 @@ let configInstance = {
 
   startTime: 0,
   endTime: 0,
-  options: config.options,
+  options: [] as string[],
 
   results: [] as string[],
 
@@ -138,7 +132,21 @@ let configInstance = {
 }
 
 export function getConfig() {
-  return configInstance
+  const network =
+    process.env.NODE_ENV === 'development' || /test/.test(location.hostname) ? 'VOTA_TEST' : 'VOTA'
+
+  return {
+    ...configInstance,
+    api:
+      network === 'VOTA_TEST'
+        ? 'https://vota-testnet-api.dorafactory.org/'
+        : 'https://vota-api.dorafactory.org/',
+    chainInfo: network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
+    detailUrl:
+      network === 'VOTA_TEST'
+        ? 'https://vota-testnet.dorafactory.org/round/'
+        : 'https://vota.dorafactory.org/round/',
+  }
 }
 
 export function updateConfig(config: Partial<typeof configInstance>) {
