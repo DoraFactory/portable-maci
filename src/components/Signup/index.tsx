@@ -35,10 +35,8 @@ function genRandomKey() {
 export default function SignupModal() {
   const { round, voiceCredit } = getConfig()
 
-  const { setSignuping } = useContext(MainContext)
-
-  const [address, setAddress] = useState<string>('')
-  const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
+  const { address, client, setSignuping, setAddress, setClient, setMaciAccount, addRecord } =
+    useContext(MainContext)
 
   const [accountStatus, setAccountStatus] = useState<IAccountStatus | null>(null)
 
@@ -98,6 +96,8 @@ export default function SignupModal() {
     setSigning(true)
     try {
       await MACI.signup(client, address, maciAccount.pubKey)
+      setMaciAccount(maciAccount)
+      addRecord('reactivate')
       setSuccess(true)
     } catch {
       message.warning('Signup canceled!')

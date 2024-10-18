@@ -110,7 +110,7 @@ let configInstance = {
   chainInfo: votaTestChainInfo,
   detailUrl: 'https://vota-testnet.dorafactory.org/round/',
   contractAddress: '',
-  coordPubkey: [0n, 0n] as [bigint, bigint],
+  coordPubKey: [0n, 0n] as [bigint, bigint],
   circutType: '',
   maciType: 'MACI' as 'MACI' | 'aMACI',
   isQv: false,

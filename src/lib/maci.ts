@@ -37,7 +37,7 @@ export async function fetchContractInfo(contractAddress: string) {
     },
 
     contractAddress,
-    coordPubkey: [BigInt(r.coordinatorPubkeyX), BigInt(r.coordinatorPubkeyY)],
+    coordPubKey: [BigInt(r.coordinatorPubkeyX), BigInt(r.coordinatorPubkeyY)],
     circutType: r.circuitName,
     maciType: r.maciType,
 
@@ -339,4 +339,119 @@ export async function submitPlan(
     return client.signAndBroadcast(address, msgs, grantFee)
   }
   return client.signAndBroadcast(address, msgs, fee)
+}
+
+export async function submitDeactivate(
+  client: SigningCosmWasmClient,
+  address: string,
+  payload: {
+    msg: bigint[]
+    encPubkeys: PublicKey
+  }[],
+) {
+  const { contractAddress, chainInfo, gasStation } = getConfig()
+  const { msg, encPubkeys } = payload[0]
+
+  const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
+  const fee = calculateFee(20000000, gasPrice)
+
+  return client.execute(
+    address,
+    contractAddress,
+    stringizing({
+      publish_deactivate_message: {
+        enc_pub_key: {
+          x: encPubkeys[0],
+          y: encPubkeys[1],
+        },
+        message: {
+          data: msg,
+        },
+      },
+    }),
+    gasStation.enable === true
+      ? {
+          amount: fee.amount,
+          gas: fee.gas,
+          granter: contractAddress,
+        }
+      : fee,
+  )
+}
+
+const DEACTIVATE_MESSAGE_QUERY = (contract: string) => `query ($limit: Int, $offset: Int) {
+  deactivateMessages(
+    first: $limit,
+    offset: $offset,
+    orderBy: [BLOCK_HEIGHT_ASC],
+    filter: {
+      maciContractAddress: { 
+        equalTo: "${contract}" 
+      },
+    }
+  ) {
+	  totalCount
+	  pageInfo {
+      endCursor
+      hasNextPage
+	  }
+    nodes {
+      id
+      blockHeight
+      timestamp
+      txHash
+      deactivateMessage
+      maciContractAddress
+      maciOperator
+    }
+  }
+}`
+
+interface DeactivateMessage {
+  id: string
+  blockHeight: string
+  timestamp: string
+  txHash: string
+  deactivateMessage: string // '[["0", "1", "2", "3", "4"]]'
+  maciContractAddress: string
+  maciOperator: string
+}
+
+async function fetchAllPages<T>(query: string, variables: any): Promise<T[]> {
+  const { api } = getConfig()
+
+  let hasNextPage = true
+  let offset = 0
+  const limit = 100 // Adjust the limit as needed
+  const allData: T[] = []
+
+  while (hasNextPage) {
+    const response = await fetch(api, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        variables: { ...variables, limit, offset },
+      }),
+    }).then((res) => res.json())
+
+    const key = Object.keys(response.data)[0]
+
+    const { nodes, pageInfo } = response.data[key]
+    allData.push(...nodes)
+    hasNextPage = pageInfo.hasNextPage
+    offset += limit
+  }
+
+  return allData
+}
+
+export const fetchAllDeactivateLogs = async () => {
+  const { contractAddress } = getConfig()
+  const ds = await fetchAllPages<DeactivateMessage>(DEACTIVATE_MESSAGE_QUERY(contractAddress), {})
+
+  return ds.reduce((s, c) => [...s, ...JSON.parse(c.deactivateMessage)], [] as string[][])
 }
