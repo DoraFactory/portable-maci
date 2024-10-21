@@ -35,8 +35,16 @@ function genRandomKey() {
 export default function SignupModal() {
   const { round, voiceCredit } = getConfig()
 
-  const { address, client, setSignuping, setAddress, setClient, setMaciAccount, addRecord } =
-    useContext(MainContext)
+  const {
+    address,
+    client,
+    setSignuping,
+    setVoteable,
+    setAddress,
+    setClient,
+    setMaciAccount,
+    addRecord,
+  } = useContext(MainContext)
 
   const [accountStatus, setAccountStatus] = useState<IAccountStatus | null>(null)
 
@@ -97,6 +105,7 @@ export default function SignupModal() {
     try {
       await MACI.signup(client, address, maciAccount.pubKey)
       setMaciAccount(maciAccount)
+      setVoteable(true)
       addRecord('reactivate')
       setSuccess(true)
     } catch {
