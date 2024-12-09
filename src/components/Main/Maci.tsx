@@ -67,6 +67,7 @@ export default function Main() {
   } = useContext(MainContext)
 
   const [accountStatus, setAccountStatus] = useState<IAccountStatus>(emptyAccountStatus())
+  const [loading, setLoading] = useState(false)
 
   const usedVc = selectedOptions.reduce((s, o) => s + (isQv ? o.vc * o.vc : o.vc), 0)
   const inputError = usedVc > accountStatus.vcbTotal
@@ -92,7 +93,9 @@ export default function Main() {
     setClient(client)
 
     if (client) {
+      setLoading(true)
       const status = await MACI.fetchAccountStatus(client, address, voiceCredit)
+      setLoading(false)
       setAccountStatus(status)
       setVoteable(status.stateIdx >= 0)
     } else {
@@ -198,7 +201,7 @@ export default function Main() {
           {accountStatus.stateIdx < 0 && !accountStatus.whitelistCommitment ? (
             <p
               className={[styles.notice, font['regular-note-rg']].join(' ')}
-              c-error={address ? '' : undefined}
+              c-error={!loading && address ? '' : undefined}
             >
               Only addresses on the allowlist can sign up and vote in this round.
             </p>
