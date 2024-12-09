@@ -1,7 +1,6 @@
 import { ChainInfo } from '@keplr-wallet/types'
 
 // import config from '@/../config.yaml'
-
 const votaChainInfo = {
   chainId: 'vota-ash',
   chainName: 'Dora Vota',
@@ -104,6 +103,7 @@ let configInstance = {
     desc: '',
     link: '',
     status: '',
+    codeId: '',
   },
 
   api: 'https://vota-testnet-api.dorafactory.org/',
@@ -129,6 +129,13 @@ let configInstance = {
     baseGrant: '0',
     totalBond: '0',
   },
+  oracleCodeId: ['0'],
+  oracleApi: '',
+  oracleCertificate: {
+    snapshotHeight: '',
+    signature: '',
+    amount: '',
+  },
 }
 
 export function getConfig() {
@@ -142,6 +149,12 @@ export function getConfig() {
         ? 'https://vota-testnet-api.dorafactory.org/'
         : 'https://vota-api.dorafactory.org/',
     chainInfo: network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
+    oracleCodeId: network === 'VOTA_TEST' ? ['97'] : [''],
+    oracleApi:
+      network === 'VOTA_TEST'
+        ? 'https://vota-testnet-certificate-api.dorafactory.org'
+        : 'https://vota-certificate-api.dorafactory.org',
+
     detailUrl:
       network === 'VOTA_TEST'
         ? 'https://vota-testnet.dorafactory.org/round/'
@@ -154,5 +167,12 @@ export function updateConfig(config: Partial<typeof configInstance>) {
     ...configInstance,
     ...config,
     isQv: /qv/i.test(config.circutType || ''),
+  }
+}
+
+export function updateOracleCertificate(config: Partial<typeof configInstance>) {
+  configInstance = {
+    ...configInstance,
+    ...config,
   }
 }
