@@ -126,7 +126,7 @@ export async function fetchWhitelistCommitment(
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ address, height: oracleConfig.snapshot_height }),
+        body: JSON.stringify({ address, height: oracleConfig.snapshot_height, contractAddress }),
       })
       console.log(signResponse)
       const sign = await signResponse.json()
