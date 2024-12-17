@@ -360,26 +360,28 @@ export async function signupOracle(
   const gasPrice = GasPrice.fromString('100000000000' + chainInfo.currencies[0].coinMinimalDenom)
   const fee = calculateFee(60000000, gasPrice)
 
-  // if (gasStation.enable === true) {
-  //   const grantFee: StdFee = {
-  //     amount: fee.amount,
-  //     gas: fee.gas,
-  //     granter: contractAddress,
-  //   }
-  //   return client.execute(
-  //     address,
-  //     contractAddress,
-  //     {
-  //       sign_up: {
-  //         pubkey: {
-  //           x: pubKey[0].toString(),
-  //           y: pubKey[1].toString(),
-  //         },
-  //       },
-  //     },
-  //     grantFee,
-  //   )
-  // }
+  if (gasStation.enable === true) {
+    const grantFee: StdFee = {
+      amount: fee.amount,
+      gas: fee.gas,
+      granter: contractAddress,
+    }
+    return client.execute(
+      address,
+      contractAddress,
+      {
+        sign_up: {
+          pubkey: {
+            x: pubKey[0].toString(),
+            y: pubKey[1].toString(),
+          },
+          amount: oracleCertificate.amount,
+          certificate: oracleCertificate.signature,
+        },
+      },
+      grantFee,
+    )
+  }
 
   return client.execute(
     address,
