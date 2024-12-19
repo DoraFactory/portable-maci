@@ -130,26 +130,30 @@ export async function fetchWhitelistCommitment(
       })
       console.log(signResponse)
       const sign = await signResponse.json()
-      console.log(sign)
-      const { signature, amount, snapshotHeight } = sign
-      updateOracleCertificate({
-        oracleCertificate: {
-          snapshotHeight,
-          signature,
-          amount,
-        },
-      })
-      // MACI
-      whitelistCommitment = await client
-        .queryContractSmart(contractAddress, {
-          white_balance_of: {
-            sender: address,
+      if (sign.code === 400) {
+        whitelistCommitment = 0
+      } else {
+        console.log(sign)
+        const { signature, amount, snapshotHeight } = sign
+        updateOracleCertificate({
+          oracleCertificate: {
+            snapshotHeight,
+            signature,
             amount,
-            certificate: signature,
           },
         })
-        .then((n: string) => Number(n))
-        .catch(() => 0)
+        // MACI
+        whitelistCommitment = await client
+          .queryContractSmart(contractAddress, {
+            white_balance_of: {
+              sender: address,
+              amount,
+              certificate: signature,
+            },
+          })
+          .then((n: string) => Number(n))
+          .catch(() => 0)
+      }
     } else {
       // MACI
       whitelistCommitment = await client
