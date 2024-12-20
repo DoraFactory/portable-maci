@@ -101,7 +101,7 @@ export async function fetchWhitelistCommitment(
   client: SigningCosmWasmClient,
   address: string,
   voiceCredit: number,
-) {
+): Promise<{ whitelistCommitment: number; feegrantStatus: string }> {
   const { contractAddress, round, oracleCodeId, oracleApi } = getConfig()
 
   if (voiceCredit) {
@@ -115,9 +115,13 @@ export async function fetchWhitelistCommitment(
       .then((n: boolean) => n)
       .catch(() => false)
 
-    return isWhiteList ? voiceCredit : 0
+    return {
+      whitelistCommitment: isWhiteList ? voiceCredit : 0,
+      feegrantStatus: 'None',
+    }
   } else {
     let whitelistCommitment
+    let feegrantStatus = 'None'
     if (oracleCodeId.includes(round.codeId)) {
       const oracleConfig = await fetchOracleConfig(client, contractAddress)
 
@@ -128,7 +132,6 @@ export async function fetchWhitelistCommitment(
         },
         body: JSON.stringify({ address, height: oracleConfig.snapshot_height, contractAddress }),
       })
-      console.log(signResponse)
       const sign = await signResponse.json()
       if (sign.code === 400) {
         whitelistCommitment = 0
@@ -153,6 +156,19 @@ export async function fetchWhitelistCommitment(
           })
           .then((n: string) => Number(n))
           .catch(() => 0)
+
+        const statusResponse = await fetch(
+          `${oracleApi}/api/v1/fee-grant/status/${address}-${contractAddress}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        const feegrantResponse = await statusResponse.json()
+        console.log(feegrantResponse)
+        feegrantStatus = feegrantResponse.content.status
       }
     } else {
       // MACI
@@ -166,7 +182,7 @@ export async function fetchWhitelistCommitment(
         .catch(() => 0)
     }
 
-    return whitelistCommitment
+    return { whitelistCommitment, feegrantStatus }
   }
 }
 
@@ -240,12 +256,17 @@ export async function fetchAccountStatus(
       whitelistCommitment: 0,
     }
   } else {
-    const whitelistCommitment = await fetchWhitelistCommitment(client, address, voiceCredit)
+    const { whitelistCommitment, feegrantStatus } = await fetchWhitelistCommitment(
+      client,
+      address,
+      voiceCredit,
+    )
 
     return {
       stateIdx: -1,
       vcbTotal: 0,
       whitelistCommitment,
+      feegrantStatus,
     }
   }
 }

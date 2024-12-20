@@ -23,28 +23,68 @@ async function sleep(ts: number) {
   })
 }
 
-const NeedToSignUp = (props: { voiceCredits: number; signup: () => void; loading: boolean }) => (
+const NeedToSignUp = (props: {
+  voiceCredits: number
+  feegrantStatus: string | undefined
+  signup: () => void
+  loading: boolean
+}) => (
   <div className={styles.needToSignUp}>
-    <p className={font['regular-body-rg']}>
-      After signing up, you will be assigned{' '}
-      <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>.{' '}
-      <a
-        href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
-        target="_blank"
-        className={[font.accentAccentPrimary, common.externalLink].join(' ')}
-        rel="noopener noreferrer"
-      >
-        Learn more about MACI.
-        <i />
-      </a>
-    </p>
-    <div
-      className={common.button}
-      c-active={props.loading ? undefined : ''}
-      onClick={() => !props.loading && props.signup()}
-    >
-      {props.loading ? 'Waiting…' : 'Sign Up'}
-    </div>
+    {props.feegrantStatus !== 'None' ? (
+      props.feegrantStatus !== 'completed' ? (
+        <p className={font['regular-body-rg']}>
+          Setting up gas fee grant... Please wait a moment and refresh the page. This process
+          usually takes 12-24 seconds.
+        </p>
+      ) : (
+        <>
+          <p className={font['regular-body-rg']}>
+            After signing up, you will be assigned{' '}
+            <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>
+            .{' '}
+            <a
+              href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
+              target="_blank"
+              className={[font.accentAccentPrimary, common.externalLink].join(' ')}
+              rel="noopener noreferrer"
+            >
+              Learn more about MACI.
+              <i />
+            </a>
+          </p>
+          <div
+            className={common.button}
+            c-active={props.loading ? undefined : ''}
+            onClick={() => !props.loading && props.signup()}
+          >
+            {props.loading ? 'Waiting…' : 'Sign Up'}
+          </div>
+        </>
+      )
+    ) : (
+      <>
+        <p className={font['regular-body-rg']}>
+          After signing up, you will be assigned{' '}
+          <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>.{' '}
+          <a
+            href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
+            target="_blank"
+            className={[font.accentAccentPrimary, common.externalLink].join(' ')}
+            rel="noopener noreferrer"
+          >
+            Learn more about MACI.
+            <i />
+          </a>
+        </p>
+        <div
+          className={common.button}
+          c-active={props.loading ? undefined : ''}
+          onClick={() => !props.loading && props.signup()}
+        >
+          {props.loading ? 'Waiting…' : 'Sign Up'}
+        </div>
+      </>
+    )}
   </div>
 )
 
@@ -212,6 +252,7 @@ export default function Main() {
         {accountStatus.whitelistCommitment ? (
           <NeedToSignUp
             voiceCredits={accountStatus.whitelistCommitment}
+            feegrantStatus={accountStatus.feegrantStatus}
             signup={signup}
             loading={signuping}
           />
