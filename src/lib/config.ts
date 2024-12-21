@@ -149,7 +149,7 @@ export function getConfig() {
         ? 'https://vota-testnet-api.dorafactory.org/'
         : 'https://vota-api.dorafactory.org/',
     chainInfo: network === 'VOTA_TEST' ? votaTestChainInfo : votaChainInfo,
-    oracleCodeId: network === 'VOTA_TEST' ? ['97', '99', '100', '101', '102'] : [''],
+    oracleCodeId: network === 'VOTA_TEST' ? ['102'] : ['101'],
     oracleApi:
       network === 'VOTA_TEST'
         ? 'https://vota-testnet-certificate-api.dorafactory.org'
