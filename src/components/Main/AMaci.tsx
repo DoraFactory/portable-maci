@@ -26,17 +26,18 @@ export default function Main() {
     submiting,
     submited,
     selectedOptions,
+    address,
+    client,
     maciAccount,
     setSignuping,
     setVoteable,
     setSubmiting,
     setSubmited,
     setSelectedOptions,
+    setAddress,
+    setClient,
     setMaciAccount,
   } = useContext(MainContext)
-
-  const [address, setAddress] = useState<string>('')
-  const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
 
   const [accountStatus, setAccountStatus] = useState<IAccountStatus>(emptyAccountStatus())
 
@@ -82,7 +83,7 @@ export default function Main() {
       const payload = batchGenMessage(
         accountStatus.stateIdx,
         maciAccount,
-        getConfig().coordPubkey,
+        getConfig().coordPubKey,
         plan,
       )
 

@@ -17,9 +17,11 @@ export interface IAccountStatus {
   stateIdx: number
   vcbTotal: number
   whitelistCommitment: number
+  feegrantStatus?: string
 }
 export const emptyAccountStatus = () => ({
   stateIdx: -1,
   vcbTotal: 0,
   whitelistCommitment: 0,
+  // feegrantStatus: 'Not granted',
 })

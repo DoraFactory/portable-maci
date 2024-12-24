@@ -23,28 +23,68 @@ async function sleep(ts: number) {
   })
 }
 
-const NeedToSignUp = (props: { voiceCredits: number; signup: () => void; loading: boolean }) => (
+const NeedToSignUp = (props: {
+  voiceCredits: number
+  feegrantStatus: string | undefined
+  signup: () => void
+  loading: boolean
+}) => (
   <div className={styles.needToSignUp}>
-    <p className={font['regular-body-rg']}>
-      After signing up, you will be assigned{' '}
-      <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>.{' '}
-      <a
-        href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
-        target="_blank"
-        className={[font.accentAccentPrimary, common.externalLink].join(' ')}
-        rel="noopener noreferrer"
-      >
-        Learn more about MACI.
-        <i />
-      </a>
-    </p>
-    <div
-      className={common.button}
-      c-active={props.loading ? undefined : ''}
-      onClick={() => !props.loading && props.signup()}
-    >
-      {props.loading ? 'Waiting…' : 'Sign Up'}
-    </div>
+    {props.feegrantStatus !== 'None' ? (
+      props.feegrantStatus !== 'completed' ? (
+        <p className={font['regular-body-rg']}>
+          Setting up gas fee grant... Please wait a moment and refresh the page. This process
+          usually takes 12-24 seconds.
+        </p>
+      ) : (
+        <>
+          <p className={font['regular-body-rg']}>
+            After signing up, you will be assigned{' '}
+            <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>
+            .{' '}
+            <a
+              href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
+              target="_blank"
+              className={[font.accentAccentPrimary, common.externalLink].join(' ')}
+              rel="noopener noreferrer"
+            >
+              Learn more about MACI.
+              <i />
+            </a>
+          </p>
+          <div
+            className={common.button}
+            c-active={props.loading ? undefined : ''}
+            onClick={() => !props.loading && props.signup()}
+          >
+            {props.loading ? 'Waiting…' : 'Sign Up'}
+          </div>
+        </>
+      )
+    ) : (
+      <>
+        <p className={font['regular-body-rg']}>
+          After signing up, you will be assigned{' '}
+          <strong className={font['semibold-body-sb']}>{props.voiceCredits} voice credits</strong>.{' '}
+          <a
+            href="https://research.dorahacks.io/2022/04/30/light-weight-maci-anonymization/"
+            target="_blank"
+            className={[font.accentAccentPrimary, common.externalLink].join(' ')}
+            rel="noopener noreferrer"
+          >
+            Learn more about MACI.
+            <i />
+          </a>
+        </p>
+        <div
+          className={common.button}
+          c-active={props.loading ? undefined : ''}
+          onClick={() => !props.loading && props.signup()}
+        >
+          {props.loading ? 'Waiting…' : 'Sign Up'}
+        </div>
+      </>
+    )}
   </div>
 )
 
@@ -56,16 +96,18 @@ export default function Main() {
     submiting,
     submited,
     selectedOptions,
+    address,
+    client,
     setVoteable,
     setSubmiting,
     setSubmited,
     setSelectedOptions,
+    setAddress,
+    setClient,
   } = useContext(MainContext)
 
-  const [address, setAddress] = useState<string>('')
-  const [client, setClient] = useState<SigningCosmWasmClient | null>(null)
-
   const [accountStatus, setAccountStatus] = useState<IAccountStatus>(emptyAccountStatus())
+  const [loading, setLoading] = useState(false)
 
   const usedVc = selectedOptions.reduce((s, o) => s + (isQv ? o.vc * o.vc : o.vc), 0)
   const inputError = usedVc > accountStatus.vcbTotal
@@ -91,7 +133,9 @@ export default function Main() {
     setClient(client)
 
     if (client) {
+      setLoading(true)
       const status = await MACI.fetchAccountStatus(client, address, voiceCredit)
+      setLoading(false)
       setAccountStatus(status)
       setVoteable(status.stateIdx >= 0)
     } else {
@@ -146,7 +190,7 @@ export default function Main() {
       const payload = batchGenMessage(
         accountStatus.stateIdx,
         maciAccount,
-        getConfig().coordPubkey,
+        getConfig().coordPubKey,
         plan,
       )
 
@@ -197,7 +241,7 @@ export default function Main() {
           {accountStatus.stateIdx < 0 && !accountStatus.whitelistCommitment ? (
             <p
               className={[styles.notice, font['regular-note-rg']].join(' ')}
-              c-error={address ? '' : undefined}
+              c-error={!loading && address ? '' : undefined}
             >
               Only addresses on the allowlist can sign up and vote in this round.
             </p>
@@ -208,6 +252,7 @@ export default function Main() {
         {accountStatus.whitelistCommitment ? (
           <NeedToSignUp
             voiceCredits={accountStatus.whitelistCommitment}
+            feegrantStatus={accountStatus.feegrantStatus}
             signup={signup}
             loading={signuping}
           />

@@ -2,6 +2,9 @@ import { randomBytes } from 'crypto'
 import { babyJub, eddsa, poseidon, poseidonEncrypt } from 'circom'
 import { Scalar, utils } from 'ffjavascript'
 import createBlakeHash from 'blake-hash'
+import { solidityPackedSha256 } from 'ethers'
+
+import Tree from './tree'
 
 type MixedData<T> = T | Array<MixedData<T>> | { [key: string]: MixedData<T> }
 
@@ -176,4 +179,90 @@ export const privateKeyFromTxt = (txt: string) => {
   }
   const priKey = poseidon(keys.map((k) => BigInt('0x' + k)))
   return genKeypair(priKey % SNARK_FIELD_SIZE)
+}
+
+const rerandomize = (
+  pubKey: bigint[],
+  ciphertext: { c1: bigint[]; c2: bigint[] },
+  randomVal = genRandomKey(),
+) => {
+  const d1 = babyJub.addPoint(babyJub.mulPointEscalar(babyJub.Base8, randomVal), ciphertext.c1)
+
+  const d2 = babyJub.addPoint(babyJub.mulPointEscalar(pubKey, randomVal), ciphertext.c2)
+
+  return {
+    d1,
+    d2,
+  } as { d1: bigint[]; d2: bigint[] }
+}
+
+export const genAddKeyProof = async (
+  depth: number,
+  {
+    coordPubKey,
+    oldKey,
+    deactivates,
+  }: {
+    coordPubKey: PublicKey
+    oldKey: Account
+    deactivates: bigint[][]
+  },
+) => {
+  const sharedKeyHash = poseidon(genEcdhSharedKey(oldKey.privKey, coordPubKey))
+
+  const randomVal = genRandomKey()
+  const deactivateIdx = deactivates.findIndex((d) => d[4] === sharedKeyHash)
+  if (deactivateIdx < 0) {
+    return null
+  }
+
+  const deactivateLeaf = deactivates[deactivateIdx]
+
+  const c1 = [deactivateLeaf[0], deactivateLeaf[1]]
+  const c2 = [deactivateLeaf[2], deactivateLeaf[3]]
+
+  const { d1, d2 } = rerandomize(coordPubKey, { c1, c2 }, randomVal)
+
+  const nullifier = poseidon([oldKey.formatedPrivKey, 1444992409218394441042n])
+
+  const tree = new Tree(5, depth, 0n)
+  const leaves = deactivates.map((d) => poseidon(d))
+  tree.initLeaves(leaves)
+
+  const deactivateRoot = tree.root
+  const deactivateLeafPathElements = tree.pathElementOf(deactivateIdx)
+
+  const inputHash =
+    BigInt(
+      solidityPackedSha256(
+        new Array(7).fill('uint256'),
+        stringizing([
+          deactivateRoot,
+          poseidon(coordPubKey),
+          nullifier,
+          d1[0],
+          d1[1],
+          d2[0],
+          d2[1],
+        ]) as string[],
+      ),
+    ) % SNARK_FIELD_SIZE
+
+  const input = {
+    inputHash,
+    coordPubKey,
+    deactivateRoot,
+    deactivateIndex: deactivateIdx,
+    deactivateLeaf: poseidon(deactivateLeaf),
+    c1,
+    c2,
+    randomVal,
+    d1,
+    d2,
+    deactivateLeafPathElements,
+    nullifier,
+    oldPrivateKey: oldKey.formatedPrivKey,
+  }
+
+  return input
 }

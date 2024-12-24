@@ -1,0 +1,127 @@
+.title
+  display: flex
+  justify-content: space-between
+  align-items: center
+  cursor: pointer
+  button
+    border: none
+    width: 12px
+    height: 12px
+    position: relative
+    transition: transform 0.2s
+    &::after
+      content: ''
+      position: absolute
+      top: 5px
+      left: 6px
+      width: 6px
+      height: 6px
+      border-right: 1px solid var(--basic-ink-primary)
+      border-bottom: 1px solid var(--basic-ink-primary)
+      transform: translate3d(-50%, -50%, 0) rotate(45deg)
+    &[c-active]
+      transform: rotate(180deg)
+
+.records
+  display: flex
+  flex-direction: column
+  gap: 16px
+.recordItem
+  list-style: none
+  display: flex
+  flex-direction: column
+  position: relative
+  > p
+    padding-left: 24px
+  .time
+    display: flex
+    align-items: center
+    gap: 8px
+  &[c-type='deactivate']
+    color: var(--accent-accent-primary)
+  &[c-type='reactivate']
+    color: var(--safe-safe-primary)
+  &[c-type='next']
+    color: var(--basic-ink-secondary)
+.recordLine
+  position: absolute
+  top: 24px
+  left: 7px
+  width: 2px
+  height: calc(100% - 8px)
+  background-color: var(--line-line-secondary)
+.recordItem:last-child
+  .recordLine
+    display: none
+
+.buttons
+  display: flex
+  gap: 16px
+  flex-wrap: wrap
+.deButton
+  flex: 0 0 auto
+  width: fit-content
+  padding: 5px 17px
+  border-radius: 18px
+  color: var(--basic-ink-secondary)
+  border: 1px solid var(--basic-ink-secondary)
+  cursor: not-allowed
+  transition: all .3s
+  /* semibold-body-sb */
+  font-weight: 600
+  font-size: 16px
+  line-height: 24px
+  &[c-active]
+    color: var(--basic-ink-primary)
+    cursor: pointer
+
+.newKey
+  margin-top: 24px
+  height: 144px
+  padding: 9px 15px
+  border-radius: 8px
+  border: 1px solid var(--line-line-secondary)
+  background: var(--basic-bg-secondary)
+  display: flex
+  align-items: center
+  gap: 8px
+  word-break: break-all
+  white-space: pre-wrap
+  > p
+    align-self: stretch
+    overflow: auto
+  .buttons
+    display: flex
+    flex-direction: column
+    gap: 8px
+  button
+    outline: none
+    border: none
+    cursor: pointer
+  svg
+    display: block
+    width: 16px
+    height: 16px
+    fill: var(--basic-ink-secondary)
+    transition: fill 0.2s
+  svg:hover
+    fill: var(--basic-ink-primary)
+  .copyable
+    fill: var(--accent-accent-primary) !important
+
+.inputKey
+  display: flex
+  flex-direction: column
+  gap: 8px
+  textarea
+    font: inherit
+    padding: 11px 17px
+    border-radius: 8px
+    border: 1px solid var(--line-line-secondary)
+    background: var(--basic-bg-primary)
+    outline: none
+    resize: none
+    &:invalid
+      color: var(--error-error-primary)
+    &::placeholder
+      color: var(--basic-ink-secondary)
