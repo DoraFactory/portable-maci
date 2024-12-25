@@ -102,7 +102,7 @@ export async function fetchWhitelistCommitment(
   address: string,
   voiceCredit: number,
 ): Promise<{ whitelistCommitment: number; feegrantStatus: string }> {
-  const { contractAddress, round, oracleCodeId, oracleApi } = getConfig()
+  const { contractAddress, round, oracleCodeId, oracleApi, gasStation } = getConfig()
 
   if (voiceCredit) {
     // aMACI
@@ -169,6 +169,12 @@ export async function fetchWhitelistCommitment(
         const feegrantResponse = await statusResponse.json()
         console.log(feegrantResponse)
         feegrantStatus = feegrantResponse.content.status
+
+        if (feegrantStatus === 'completed') {
+          if (gasStation.enable === false) {
+            await fetchContractInfo(contractAddress)
+          }
+        }
       }
     } else {
       // MACI
