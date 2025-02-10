@@ -12,18 +12,16 @@
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.31.1",
     "@cosmjs/stargate": "^0.31.1",
+    "@dorafactory/maci-sdk": "^0.0.13",
     "@keplr-wallet/types": "^0.12.22",
     "@types/node": "20.5.7",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "antd": "^5.8.6",
-    "blake-hash": "^2.0.0",
-    "circom": "https://github.com/weijiekoh/circomlib.git#24ed08eee0bb613b8c0135d66c1013bd9f78d50a",
     "cosmjs-types": "0.8.0",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "ethers": "^6.13.4",
-    "ffjavascript": "^0.2.60",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -32,9 +30,26 @@
     "yaml-loader": "^0.8.0"
   },
   "devDependencies": {
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto": "npm:crypto-browserify@3.12.0",
+    "crypto-browserify": "^3.12.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-prettier": "^5.0.0",
-    "prettier": "^3.0.3"
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "prettier": "^3.0.3",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "rimraf": "^6.0.1",
+    "stream": "npm:stream-browserify@3.0.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "util": "^0.12.5",
+    "webpack": "^5.97.1"
+  },
+  "resolutions": {
+    "zlib": "npm:browserify-zlib@0.2.0"
   }
 }

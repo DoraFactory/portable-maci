@@ -7,9 +7,9 @@ import {
   useState,
 } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { Account } from '@dorafactory/maci-sdk'
 
 import { IOption } from '@/types'
-import { Account } from '@/lib/circom'
 
 export interface Record {
   type: 'deactivate' | 'reactivate'

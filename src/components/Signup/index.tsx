@@ -1,13 +1,13 @@
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { message } from 'antd'
+import { privateKeyFromTxt } from '@dorafactory/maci-sdk'
 
 import { MainContext } from '../Main/ctx'
 import Wallet from '../Wallet'
 import styles from './index.module.sass'
 
 import { getConfig } from '@/lib/config'
-import { privateKeyFromTxt } from '@/lib/circom'
 import * as MACI from '@/lib/maci'
 
 import common from '@/styles/common.module.sass'

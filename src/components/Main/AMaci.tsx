@@ -1,6 +1,7 @@
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { message } from 'antd'
+import { Account, batchGenMessage, privateKeyFromTxt } from '@dorafactory/maci-sdk'
 
 import Wallet from '../Wallet'
 import ActiveOptionList from '../ActiveOption/List'
@@ -15,7 +16,6 @@ import font from '@/styles/font.module.sass'
 
 import { IAccountStatus, emptyAccountStatus } from '@/types'
 import * as MACI from '@/lib/maci'
-import { Account, batchGenMessage, privateKeyFromTxt } from '@/lib/circom'
 import { getConfig } from '@/lib/config'
 
 export default function Main() {

@@ -1,12 +1,12 @@
 import { useRef, useImperativeHandle, forwardRef, ChangeEvent, useState, useContext } from 'react'
 import Image from 'next/image'
+import { batchGenMessage, privateKeyFromTxt } from '@dorafactory/maci-sdk'
 
 import { MainContext } from '../Main/ctx'
 import { DialogHandle, toTimeString } from './lib'
 import styles from './index.module.sass'
 
 import * as MACI from '@/lib/maci'
-import { batchGenMessage, privateKeyFromTxt } from '@/lib/circom'
 
 import close from '@/assets/icons/close.svg'
 

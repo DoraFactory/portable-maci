@@ -1,7 +1,7 @@
 import { MsgExecuteContractEncodeObject, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { GasPrice, StdFee, calculateFee } from '@cosmjs/stargate'
-import { PublicKey, genKeypair, stringizing } from './circom'
+import { PublicKey, genKeypair, stringizing } from '@dorafactory/maci-sdk'
 import { getConfig, updateConfig, updateOracleCertificate } from '@/lib/config'
 import { IAccountStatus, IStats } from '@/types'
 

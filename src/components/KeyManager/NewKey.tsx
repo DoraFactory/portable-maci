@@ -1,5 +1,6 @@
 import { useRef, useImperativeHandle, forwardRef, ChangeEvent, useState, useContext } from 'react'
 import Image from 'next/image'
+import { genAddKeyProof, privateKeyFromTxt } from '@dorafactory/maci-sdk'
 
 import { MainContext } from '../Main/ctx'
 import { DialogHandle, toTimeString } from './lib'
@@ -7,7 +8,6 @@ import styles from './index.module.sass'
 import loadingIcon from './icons/loading.svg'
 
 import * as MACI from '@/lib/maci'
-import { genAddKeyProof, privateKeyFromTxt } from '@/lib/circom'
 
 import close from '@/assets/icons/close.svg'
 
@@ -146,8 +146,8 @@ export default forwardRef<DialogHandle>(function NewKey(_, ref) {
           {proofing
             ? 'Key registration is processing'
             : input
-            ? 'Register your new aMACI key'
-            : 'Verify your old aMACI key'}
+              ? 'Register your new aMACI key'
+              : 'Verify your old aMACI key'}
         </h2>
         {proofing ? (
           <p className={font['regular-body-rg']}>

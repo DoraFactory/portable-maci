@@ -47,8 +47,8 @@ export default function Title() {
             handleStatusByVotingTime(startTime, endTime, round.status) === 'Ongoing'
               ? [styles['claimed-status'], styles['nomal-name']].join(' ')
               : handleStatusByVotingTime(startTime, endTime, round.status) === 'Tallying'
-              ? [styles['pending-status'], styles['nomal-name']].join(' ')
-              : [styles['expired-status'], styles['nomal-name']].join(' ')
+                ? [styles['pending-status'], styles['nomal-name']].join(' ')
+                : [styles['expired-status'], styles['nomal-name']].join(' ')
           }
         >
           {handleStatusByVotingTime(startTime, endTime, round.status)}
